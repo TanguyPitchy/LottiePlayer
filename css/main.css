@@ -1,0 +1,275 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+section svg{
+  fill: grey;
+  margin: 10px;
+}
+
+html {
+  font-size: 18px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #ffffff;
+  line-height: 1.5rem;
+}
+
+body {
+  background-color: #2b2929;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+header {
+  margin-top: 1rem;
+}
+
+.droparea {
+  margin: 1rem auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 384px;
+  max-width: 100%;
+  height: 160px;
+  border: 4px dashed grey;
+  border-radius: 15px;
+}
+
+.droparea i {
+  font-size: 3rem;
+  flex-grow: 1;
+  padding-top: 1rem;
+}
+
+.green-border {
+  border-color: green;
+}
+
+.player {
+  position: relative;
+  width: fit-content;
+  height: fit-content;
+  max-width: 500px;
+  max-height: 500px ;
+  margin: auto;
+  border: 2px dashed rgb(255, 255, 255);
+}
+
+#animation-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#animation-slider {
+  width: 200px;
+}
+
+.ControlPalette{
+  margin: 0px 0px 15px 0px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.SelectColor{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.SelectOpacity{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+#animation-controls{
+  margin: 15px;
+}
+
+/* Boutons */
+button {
+  background-color: #fff;
+  border: 1px solid #d5d9d9;
+  border-radius: 8px;
+  box-sizing: border-box;
+  color: #0f1111;
+  cursor: pointer;
+  display: inline-block;
+  font-family: "Amazon Ember",sans-serif;
+  font-size: 13px;
+  line-height: 29px;
+  padding: 0 10px 0 11px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: middle;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  border-radius: 2px;
+}
+
+button:hover {
+  background-color: #cacaca;
+}
+
+#animation-controls button span{
+  font-size: 25px;
+}
+
+
+
+#drop-area{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 25vh;
+  min-height: 25vh;
+  transition: background-color 0.3s ease; 
+  z-index: 2;
+}
+
+.grid{
+  padding: 0px;
+  position: absolute;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: -999;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  flex-wrap: wrap;
+}
+
+.grid-box{
+width: 33.33333333%;
+height:  33.33333333%;
+border: solid 1px rgba(255, 255, 255, 0.459);
+}
+
+.res-select div{
+  margin-left: 10px;
+}
+
+#drop-area p{
+  position: absolute;
+}
+
+#drop-area.dragover {
+  background-color: #f0f8ff4f; /* Change the background color when dragging over */
+}
+
+#animation-container{
+  z-index: 0;
+  max-width: 500px;
+  max-height: 500px;
+  position: relative;
+}
+
+#animation-container svg{
+  max-width: 500px;
+  max-height: 500px;
+}
+
+#animation-controls{
+  display: flex;
+  flex-direction: row;
+}
+
+#current-frame{
+  text-align: center;
+  width: 40px;
+}
+
+.ControlPos input{
+  width: 75px;
+  text-align: center;
+}
+
+.ControlText textarea{
+text-align: center;
+padding: 2.5px;
+min-width: 235.028px;
+}
+
+.ControlText{
+  margin: 10px 0px 0px 0px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.ControlText input{
+  text-align: center;
+  padding: 2.5px;
+  width: 50px;
+}
+
+.ControlText div{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.ButtonOn{
+  background-color: #0075ff;
+  color: white;
+}
+
+.ButtonOn:hover{
+  background-color: #0059a1;
+}
+.res-select{
+  display: flex;
+  gap: 5px;
+}
+.res-select button{
+  width: 25px;
+  height: 25px;
+}
+
+.container1{
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  gap: 15px;
+}
+
+.container{
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  align-items: center;
+}

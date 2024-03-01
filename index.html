@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Lottie</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"
+        integrity="sha512-jEnuDt6jfecCjthQAJ+ed0MTVA++5ZKmlUcmDGBv2vUI/REn6FuIdixLNnQT+vKusE2hhTk2is3cFvv5wA+Sgg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.4.5/jscolor.min.js"></script>
+</head>
+
+<body>
+    <main>
+        
+        <div class="container1">
+            <div class="res-select">
+                <button onclick="FormatHor()"><span class="material-symbols-outlined">
+                    crop_16_9
+                    </span></button>
+                <button onclick="FormatCar()"><span class="material-symbols-outlined">
+                    crop_square
+                    </span></button>
+                <button onclick="FormatVer()"><span class="material-symbols-outlined">
+                    crop_9_16
+                    </span></button>
+                <div>
+                    <button onclick="ToggleGrid()"><span class="material-symbols-outlined">
+                        grid_3x3
+                        </span></button>
+                </div>
+
+            </div>
+            <div class="player" id="drop-area" ondrop="handleDrop(event)" ondragover="handleDragOver(event)">
+                <p>Déposez un lottie ici</p>
+                <div class="grid">
+                    <div class="grid-box"></div>
+                    <div class="grid-box"></div>
+                    <div class="grid-box"></div>
+                    <div class="grid-box"></div>
+                    <div class="grid-box"></div>
+                    <div class="grid-box"></div>
+                    <div class="grid-box"></div>
+                    <div class="grid-box"></div>
+                    <div class="grid-box"></div>
+                </div>
+                <div  id="animation-container"></div>
+            </div>
+        </div>
+        
+       
+
+        <div id="animation-controls">
+            <button onclick="togglePlay()"><span class="material-symbols-outlined playpause">
+                play_arrow
+                </span></button>
+            <input type="range" id="animation-slider" min="0" max="100" value="0" step="1" onchange="updateFrame()"
+                disabled>
+                <span id="current-frame">0</span>
+        </div>
+
+        <div class="container">
+            Palette
+            <div class="ControlPalette">
+                <div class="SelectColor">
+                    <input type="color" class="color-picker" id="color-picker1" value="#ff0000" title="BG"  />
+                    <input type="color" class="color-picker" id="color-picker2" value="#00ff00" title="Text1"/>
+                    <input type="color" class="color-picker" id="color-picker3" value="#0000ff" title="Text2"/>
+                    <input type="color" class="color-picker" id="color-picker4" value="#ffff00" title="Elem1"/>
+                    <input type="color" class="color-picker" id="color-picker5" value="#ff00ff" title="Elem2"/>
+                </div>
+                <div class="SelectOpacity">
+                    <div>
+                        <label for="color-opacity1">Activé</label>
+                        <input type="checkbox" id="color-opacity1" class="color-opacity-checkbox" checked>
+    
+                    </div>
+                    <div>
+                        <label for="color-opacity2">Activé</label>
+                        <input type="checkbox" id="color-opacity2" class="color-opacity-checkbox" checked>
+    
+                    </div>
+                    <div>
+                        <label for="color-opacity3">Activé</label>
+                        <input type="checkbox" id="color-opacity3" class="color-opacity-checkbox" checked>
+    
+                    </div>
+                    <div>
+                        <label for="color-opacity4">Activé</label>
+                        <input type="checkbox" id="color-opacity4" class="color-opacity-checkbox" checked>
+    
+                    </div>
+                    <div>
+                        <label for="color-opacity5">Activé</label>
+                        <input type="checkbox" id="color-opacity5" class="color-opacity-checkbox" checked>
+    
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            Positions - Scale
+            <div class="ControlPos">
+           
+                <input type="text" placeholder="Panel X" id="panelX" value="" />
+                
+              
+                <input type="text" placeholder="Panel Y" id="panelY" value="" />
+                
+            
+                <input type="text" placeholder="Scale"  id="scale" value="" />
+            </div>
+        </div>
+        
+        <div class="ControlText">
+            Textes
+            <div class="Alignment">
+                <button onclick="AlignLeft()"><span class="material-symbols-outlined">
+                    format_align_left
+                    </span></button>
+                <button onclick="AlignCenter()"><span class="material-symbols-outlined">
+                    format_align_center
+                    </span></button>
+                <button onclick="AlignRight()"><span class="material-symbols-outlined">
+                    format_align_right
+                    </span></button>
+            </div>
+            <div><textarea id="text-input" placeholder="Text 1" rows="1"></textarea><input type="text" placeholder="Size" id="font-size-input-1" class="font-size-input" min="1" value=""></div>
+            <div><textarea id="text-input-2" class="text-input" placeholder="Text 2" rows="1"></textarea><input  type="text" placeholder="Size" id="font-size-input-2" class="font-size-input" min="1" value=""></div>
+           
+            
+        </div>
+
+
+
+
+
+
+
+
+    </main>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+var dropArea = document.getElementById('drop-area');
+var textArea1 = document.getElementById('text-input');
+var textArea2 = document.getElementById('text-input-2');
+var fontSizeInput1 = document.getElementById('font-size-input-1');
+var fontSizeInput2 = document.getElementById('font-size-input-2');
+var spanElement = document.querySelector('.playpause');
+
+var inputFields = ["panelX", "panelY", "scale", "font-size-input-1", "font-size-input-2"];
+
+inputFields.forEach(function (field) {
+    var inputElement = document.getElementById(field);
+
+    // Disable input suggestions
+    inputElement.addEventListener("focus", function () {
+        inputElement.setAttribute("autocomplete", "off");
+    });
+
+    // Event listener for arrow key input
+    inputElement.addEventListener("keydown", function (event) {
+        handleArrowKeyInput(event, field);
+    });
+
+});
+
+function handleArrowKeyInput(event, inputId) {
+    var step = event.shiftKey ? 10 : 1;
+
+    if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+        event.preventDefault(); // Prevent scrolling
+
+        var direction = event.key === "ArrowUp" ? 1 : -1;
+        updateInputValue(inputId, step * direction);
+    }
+}
+
+
+
+function updateInputValue(inputId, step) {
+    var inputElement = document.getElementById(inputId);
+    var currentValue = parseFloat(inputElement.value) || 0;
+    var newValue = currentValue + step;
+    inputElement.value = newValue;
+    updateColors();
+    updateSize();
+    playLottieAnimation(animData);
+}
+
+function adjustTextareaHeight() {
+    textArea1.style.height = 'auto'; // Reset height to auto
+    textArea1.style.height = (textArea1.scrollHeight) + 'px'; // Set height to scrollHeight
+    textArea2.style.height = 'auto'; // Reset height to auto
+    textArea2.style.height = (textArea2.scrollHeight) + 'px'; // Set height to scrollHeight
+    }
+
+
+    fontSizeInput1 .addEventListener("input", function () {
+        updateSize();
+    });
+
+    fontSizeInput2 .addEventListener("input", function () {
+        updateSize();
+    });
+    // Attach event listeners for input and change events on the textarea
+    textArea1 .addEventListener("input", function () {
+        updateText();
+        adjustTextareaHeight();
+    });
+
+    textArea2 .addEventListener("input", function () {
+        updateText();
+        adjustTextareaHeight();
+    });
+
+    textArea1 .addEventListener("change", function () {
+        adjustTextareaHeight();
+    });
+
+    textArea2 .addEventListener("change", function () {
+        adjustTextareaHeight();
+    });
+
+dropArea.addEventListener('dragenter', function (event) {
+    // Prevent default to allow drop
+    event.preventDefault();
+
+    // Add the 'dragover' class to change the background color
+    dropArea.classList.add('dragover');
+    // Hide the <p> element
+    dropArea.querySelector('p').style.display = 'none';
+});
+
+dropArea.addEventListener('dragleave', function () {
+    // Remove the 'dragover' class to revert the background color
+    dropArea.classList.remove('dragover');
+    // Show the <p> element when leaving the drop area
+});
+
+dropArea.addEventListener('drop', function () {
+    // Remove the 'dragover' class on drop
+    dropArea.classList.remove('dragover');
+    document.querySelector('.playpause').textContent = 'play_arrow';
+    // Show the <p> element
+});
+
+var selectedColors = ["#000000", "#000000", "#000000", "#000000", "#000000"]; // Default to black
+var animData;
+var animationInstance;
+var isPaused = false;
+var currentFrame = 0;
+
+
+
+function handleDrop(event) {
+    event.preventDefault();
+
+    var files = event.dataTransfer.files;
+    if (files.length > 0) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            animData = JSON.parse(e.target.result);
+            applyColorsFromJSON();
+            applyTextFromJSON();
+            applySizeFromJSON();
+            DetectAlign();
+            DetectFormat();
+            playLottieAnimation(animData);
+            FreezeFrame();
+        };
+        reader.readAsText(files[0]);
+    }
+}
+
+function handleDragOver(event) {
+    event.preventDefault();
+}
+
+function AlignRight() {
+    Align(1); 
+    DetectAlign()
+}
+
+function AlignCenter() {
+    Align(2); 
+    DetectAlign()
+}
+
+function AlignLeft() {
+    Align(0); 
+    DetectAlign()
+}
+
+function FormatHor() {
+    Format(0); 
+    DetectFormat()
+}
+
+function FormatCar() {
+    Format(1); 
+    DetectFormat()
+}
+
+function FormatVer() {
+    Format(2); 
+    DetectFormat()
+}
+
+function ToggleGrid() {
+    var fourthButton = document.querySelectorAll('.res-select button')[3];
+    grid = document.querySelector('.grid');
+    if(grid.style.display == "flex"){
+        fourthButton.classList.remove('ButtonOn');
+        grid.style.display = "none"; 
+    }else{
+        fourthButton.classList.add('ButtonOn');
+        grid.style.display = "flex";
+    }
+
+}
+
+function applyColorsFromJSON() {
+    // Reset all color pickers to black
+    for (var i = 1; i <= 5; i++) {
+        var colorPicker = document.getElementById("color-picker" + i);
+        colorPicker.value = "#000000";
+        selectedColors[i - 1] = "#000000"; // Default to black
+    }
+
+    // Set color pickers based on the colors present in the new animation JSON
+    if (animData && animData.layers) {
+        animData.layers.forEach(function (layer) {
+            if (layer.nm === "palette" && layer.ef) {
+                layer.ef.forEach(function (effect) {
+                    for (var i = 1; i <= 5; i++) {
+                        var colorPicker = document.getElementById("color-picker" + i);
+                        if (effect.nm === "color" + i && effect.ef && colorPicker) {
+                            effect.ef.forEach(function (subEffect) {
+                                if (subEffect.nm === "Color" && subEffect.v) {
+                                    var colorValue = rgbToHex(
+                                        Math.round(subEffect.v.k[0] * 255),
+                                        Math.round(subEffect.v.k[1] * 255),
+                                        Math.round(subEffect.v.k[2] * 255)
+                                    );
+                                    colorPicker.value = colorValue;
+                                    selectedColors[i - 1] = colorValue;
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+
+        // Set Panel_X, Panel_Y, and Scale based on the values present in the new animation JSON
+        if (animData.layers) {
+            animData.layers.forEach(function (layer) {
+                // For "control_panel" layer
+                if (layer.nm === "control_panel" && layer.ef) {
+                    layer.ef.forEach(function (effect) {
+                        if (effect.nm === "Panel_X" && effect.ef) {
+                            effect.ef.forEach(function (panelXEffect) {
+                                if (panelXEffect.nm === "Slider" && panelXEffect.v) {
+                                    document.getElementById("panelX").value = panelXEffect.v.k || 0;
+                                }
+                            });
+                        }
+
+                        if (effect.nm === "Panel_Y" && effect.ef) {
+                            effect.ef.forEach(function (panelYEffect) {
+                                if (panelYEffect.nm === "Slider" && panelYEffect.v) {
+                                    document.getElementById("panelY").value = panelYEffect.v.k || 0;
+                                }
+                            });
+                        }
+                    });
+                }
+
+                // For "scale" layer
+                if (layer.nm === "scale" && layer.ks && layer.ks.s) {
+                    document.getElementById("scale").value = layer.ks.s.k[0] || 100;
+                }
+            });
+        }
+    }
+}
+
+function DetectAlign() {
+    className = "ButtonOn";
+var alignLeftButton = document.querySelector('.Alignment button:nth-child(1)');
+var alignCenterButton = document.querySelector('.Alignment button:nth-child(2)');
+var alignRightButton = document.querySelector('.Alignment button:nth-child(3)');
+document.querySelectorAll('.Alignment button').forEach(function(btn) {
+            btn.classList.remove(className);
+        });
+
+    if (animData && animData.layers) {
+            animData.layers.forEach(function (layer) {
+                if (layer.nm === "text1" && layer.ef) {
+                    layer.ef.forEach(function (effect) {
+                        if (effect.nm === "T_Alignment" && effect.ef) {
+                            effect.ef.forEach(function (AlignEffect) {
+                                if (AlignEffect.nm === "Slider" && AlignEffect.v) {
+                                    if(AlignEffect.v.k == 0){
+                                        alignLeftButton.classList.add(className);
+                                    }
+                                    if(AlignEffect.v.k == 1){
+                                        alignRightButton.classList.add(className);
+                                    }
+                                    if(AlignEffect.v.k == 2){
+                                        alignCenterButton.classList.add(className);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+}
+
+
+function DetectFormat() {
+    className = "ButtonOn";
+var buttons = document.querySelectorAll('.res-select button');
+var HorButton = document.querySelector('.res-select button:nth-child(1)');
+var CarButton = document.querySelector('.res-select button:nth-child(2)');
+var VerButton = document.querySelector('.res-select button:nth-child(3)');
+for (var i = 0; i < 3; i++) {
+    buttons[i].classList.remove(className);
+}
+
+    if (animData) {
+        if(animData.w == 1920 && animData.h == 1080){
+            HorButton.classList.add(className);
+        }
+        if(animData.w == 1080 && animData.h == 1080){
+            CarButton.classList.add(className);
+        }
+        if(animData.w == 1080 && animData.h == 1920){
+            VerButton.classList.add(className);
+        }
+        
+        
+        }
+}
+
+function applyTextFromJSON() {
+        // Check if there is a layer named "text1"
+        var CtrlTxt = document.querySelector('.ControlText');
+        var textLayer = animData.layers.find(function (layer) {
+            return layer.nm === "text1" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
+        });
+
+        // If the layer is found, update the text input with its value
+        if (textLayer) {
+            textArea1 .value = textLayer.t.d.k[0].s.t;
+            textArea1 .style.display = "block";
+            CtrlTxt .style.display = "flex";
+        } else {
+            // If the layer is not found, hide the text input
+            textArea1 .style.display = "none";
+            CtrlTxt .style.display = "none";
+        }
+
+        var textLayer2 = animData.layers.find(function (layer) {
+            return layer.nm === "text2" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
+        });
+
+        // If the layer is found, update the text input with its value
+        if (textLayer2) {
+            textArea2 .value = textLayer2.t.d.k[0].s.t;
+            textArea2 .style.display = "block";
+        } else {
+            // If the layer is not found, hide the text input
+            textArea2 .style.display = "none";
+        }
+    }
+
+    function applySizeFromJSON() {
+        // Check if there is a layer named "text1"
+        var textLayer = animData.layers.find(function (layer) {
+            return layer.nm === "text1" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
+        });
+
+        // If the layer is found, update the text input with its value
+        if (textLayer) {
+            fontSizeInput1 .value = textLayer.t.d.k[0].s.s;
+            fontSizeInput1 .style.display = "block";
+        } else {
+            // If the layer is not found, hide the text input
+            fontSizeInput1 .style.display = "none";
+        }
+
+        var textLayer2 = animData.layers.find(function (layer) {
+            return layer.nm === "text2" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
+        });
+
+        // If the layer is found, update the text input with its value
+        if (textLayer2) {
+            fontSizeInput2 .value = textLayer2.t.d.k[0].s.s;
+            fontSizeInput2 .style.display = "block";
+        } else {
+            // If the layer is not found, hide the text input
+            fontSizeInput2 .style.display = "none";
+        }
+    }
+
+
+function updateColors() {
+    if (animationInstance && animData && animData.layers) {
+        animData.layers.forEach(function (layer) {
+            if (layer.nm === "palette" && layer.ef) {
+                layer.ef.forEach(function (effect) {
+                    for (var i = 1; i <= 5; i++) {
+                        var colorPicker = document.getElementById("color-picker" + i);
+                        if (effect.nm === "color" + i && effect.ef && colorPicker) {
+                            effect.ef.forEach(function (subEffect) {
+                                if (subEffect.nm === "Color" && subEffect.v) {
+                                    subEffect.v.k = [hexToRgb(colorPicker.value).r / 255, hexToRgb(colorPicker.value).g / 255, hexToRgb(colorPicker.value).b / 255, 1];
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+
+        // Update Panel_X, Panel_Y, and Scale
+        if (animData.layers) {
+            animData.layers.forEach(function (layer) {
+                // For "control_panel" layer
+                if (layer.nm === "control_panel" && layer.ef) {
+                    layer.ef.forEach(function (effect) {
+                        if (effect.nm === "Panel_X" && effect.ef) {
+                            effect.ef.forEach(function (panelXEffect) {
+                                if (panelXEffect.nm === "Slider" && panelXEffect.v) {
+                                    panelXEffect.v.k = parseFloat(document.getElementById("panelX").value) || 0;
+                                }
+                            });
+                        }
+
+                        if (effect.nm === "Panel_Y" && effect.ef) {
+                            effect.ef.forEach(function (panelYEffect) {
+                                if (panelYEffect.nm === "Slider" && panelYEffect.v) {
+                                    panelYEffect.v.k = parseFloat(document.getElementById("panelY").value) || 0;
+                                }
+                            });
+                        }
+                    });
+                }
+
+                // For "scale" layer
+                if (layer.nm === "scale" && layer.ks && layer.ks.s) {
+                    layer.ks.s.k[0] = parseFloat(document.getElementById("scale").value) || 100;
+                    layer.ks.s.k[1] = parseFloat(document.getElementById("scale").value) || 100;
+                }
+            });
+        }
+
+        
+
+        // Save the current frame
+        currentFrame = animationInstance.currentFrame;
+        // Reload the animation with updated colors
+        lottie.destroy();
+        playLottieAnimation(animData);
+        // Go to the saved frame
+        animationInstance.goToAndStop(currentFrame, true);
+    }
+}
+
+function updateText() {
+        if (animationInstance && animData && animData.layers) {
+            var textLayer = animData.layers.find(function (layer) {
+                return layer.nm === "text1" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
+            });
+
+            if (textLayer) {
+                textLayer.t.d.k[0].s.t = textArea1 .value.replace(/\n/g, "\r");
+                currentFrame = animationInstance.currentFrame;
+                lottie.destroy();
+                playLottieAnimation(animData);
+                animationInstance.goToAndStop(currentFrame, true);
+            }
+        }
+
+        if (animationInstance && animData && animData.layers) {
+            var textLayer2 = animData.layers.find(function (layer) {
+                return layer.nm === "text2" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
+            });
+
+            if (textLayer2) {
+                textLayer2.t.d.k[0].s.t = textArea2 .value.replace(/\n/g, "\r");
+                currentFrame = animationInstance.currentFrame;
+                lottie.destroy();
+                playLottieAnimation(animData);
+                animationInstance.goToAndStop(currentFrame, true);
+            }
+        }
+    }
+
+    function FreezeFrame() {
+    if (animData.markers) {
+            animData.markers.forEach(function (marker) {
+                if (marker.cm === "freeze") {
+                    freeze = marker.tm;
+                    console.log(freeze);
+                    playLottieAnimation(animData);
+                    animationInstance.goToAndStop(freeze, true);
+                }
+            });
+        }
+}
+
+    function updateSize() {
+        if (animationInstance && animData && animData.layers) {
+            var textLayer = animData.layers.find(function (layer) {
+                return layer.nm === "text1" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
+            });
+
+            if (textLayer) {
+                textLayer.t.d.k[0].s.s = parseFloat(fontSizeInput1.value) || 100;
+                currentFrame = animationInstance.currentFrame;
+                lottie.destroy();
+                playLottieAnimation(animData);
+                animationInstance.goToAndStop(currentFrame, true);
+            }
+        }
+
+        if (animationInstance && animData && animData.layers) {
+            var textLayer = animData.layers.find(function (layer) {
+                return layer.nm === "text1_template" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
+            });
+
+            if (textLayer) {
+                textLayer.t.d.k[0].s.s = parseFloat(fontSizeInput1.value) || 100;
+                currentFrame = animationInstance.currentFrame;
+                lottie.destroy();
+                playLottieAnimation(animData);
+                animationInstance.goToAndStop(currentFrame, true);
+            }
+        }
+
+        if (animationInstance && animData && animData.layers) {
+            var textLayer2 = animData.layers.find(function (layer) {
+                return layer.nm === "text2" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
+            });
+
+            if (textLayer2) {
+                textLayer2.t.d.k[0].s.s =  parseFloat(fontSizeInput2.value) || 100;
+                currentFrame = animationInstance.currentFrame;
+                lottie.destroy();
+                playLottieAnimation(animData);
+                animationInstance.goToAndStop(currentFrame, true);
+            }
+        }
+
+        if (animationInstance && animData && animData.layers) {
+            var textLayer = animData.layers.find(function (layer) {
+                return layer.nm === "text2_template" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
+            });
+
+            if (textLayer) {
+                textLayer.t.d.k[0].s.s = parseFloat(fontSizeInput2.value) || 100;
+                currentFrame = animationInstance.currentFrame;
+                lottie.destroy();
+                playLottieAnimation(animData);
+                animationInstance.goToAndStop(currentFrame, true);
+            }
+        }
+    }
+
+    function Align(AlignValue) {
+        if (animData && animData.layers) {
+            animData.layers.forEach(function (layer) {
+                if (layer.nm === "text1" && layer.ef) {
+                    layer.ef.forEach(function (effect) {
+                        if (effect.nm === "T_Alignment" && effect.ef) {
+                            effect.ef.forEach(function (AlignEffect) {
+                                if (AlignEffect.nm === "Slider" && AlignEffect.v) {
+                                    AlignEffect.v.k = AlignValue;
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        if (animationInstance && animData && animData.layers) {
+            var textLayer = animData.layers.find(function (layer) {
+                return layer.nm === "text1" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
+            });
+
+            if (textLayer) {
+                textLayer.t.d.k[0].s.j = AlignValue;
+                currentFrame = animationInstance.currentFrame;
+                lottie.destroy();
+                playLottieAnimation(animData);
+                animationInstance.goToAndStop(currentFrame, true);
+            }
+        }
+
+        if (animationInstance && animData && animData.layers) {
+            var textLayer = animData.layers.find(function (layer) {
+                return layer.nm === "text1_template" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
+            });
+
+            if (textLayer) {
+                textLayer.t.d.k[0].s.j = AlignValue;
+                currentFrame = animationInstance.currentFrame;
+                lottie.destroy();
+                playLottieAnimation(animData);
+                animationInstance.goToAndStop(currentFrame, true);
+            }
+        }
+
+        if (animData && animData.layers) {
+            animData.layers.forEach(function (layer) {
+                if (layer.nm === "text2" && layer.ef) {
+                    layer.ef.forEach(function (effect) {
+                        if (effect.nm === "T_Alignment" && effect.ef) {
+                            effect.ef.forEach(function (AlignEffect) {
+                                if (AlignEffect.nm === "Slider" && AlignEffect.v) {
+                                    AlignEffect.v.k = AlignValue;
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        if (animationInstance && animData && animData.layers) {
+            var textLayer = animData.layers.find(function (layer) {
+                return layer.nm === "text2" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
+            });
+
+            if (textLayer) {
+                textLayer.t.d.k[0].s.j = AlignValue;
+                currentFrame = animationInstance.currentFrame;
+                lottie.destroy();
+                playLottieAnimation(animData);
+                animationInstance.goToAndStop(currentFrame, true);
+            }
+        }
+
+        if (animationInstance && animData && animData.layers) {
+            var textLayer = animData.layers.find(function (layer) {
+                return layer.nm === "text2_template" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
+            });
+
+            if (textLayer) {
+                textLayer.t.d.k[0].s.j = AlignValue;
+                currentFrame = animationInstance.currentFrame;
+                lottie.destroy();
+                playLottieAnimation(animData);
+                animationInstance.goToAndStop(currentFrame, true);
+            }
+        }
+    }
+
+    function Format(FormatValue) {
+        if (animData) {
+            if(FormatValue == 0){
+                animData.w = 1920 ;
+                animData.h = 1080;
+            }
+            if(FormatValue == 1){
+                animData.w = 1080 ;
+                animData.h = 1080;
+            }
+            if(FormatValue == 2){
+                animData.w = 1080 ;
+                animData.h = 1920;
+            }
+                currentFrame = animationInstance.currentFrame;
+                lottie.destroy();
+                playLottieAnimation(animData);
+                animationInstance.goToAndStop(currentFrame, true);
+        }
+    }
+
+
+function playLottieAnimation(animationData) {
+    var animationContainer = document.getElementById('animation-container');
+    animationContainer.innerHTML = ''; // Clear previous animation
+
+    animationInstance = lottie.loadAnimation({
+        container: animationContainer,
+        renderer: 'svg',
+        loop: true,
+        autoplay: false,
+        animationData: animationData
+    });
+
+    
+    document.getElementById('animation-slider').max = animationInstance.totalFrames;
+    document.getElementById('animation-slider').disabled = false;
+
+    // Reset slider value to 0 when a new animation is loaded
+    document.getElementById('animation-slider').value = 0;
+
+    // Update the slider value when the animation progresses
+    animationInstance.addEventListener('enterFrame', function (event) {
+        document.getElementById('animation-slider').value = event.currentTime;
+        var currentFrameElement = document.getElementById('current-frame');
+        if (currentFrameElement) {
+            currentFrameElement.innerText = Math.floor(event.currentTime);
+        }
+    });
+
+    // Update isPaused variable based on animation state
+    animationInstance.addEventListener('complete', function () {
+        isPaused = true;
+    });
+
+    animationInstance.addEventListener('pause', function () {
+        isPaused = true;
+    });
+
+    animationInstance.addEventListener('play', function () {
+        isPaused = false;
+    });
+
+    document.getElementById('animation-slider').addEventListener('input', function () {
+        updateFrame();
+    });
+    spanElement.textContent = 'play_arrow';
+
+    // Go to the saved frame
+    animationInstance.goToAndStop(currentFrame, true);
+}
+
+
+
+function togglePlay() {
+    if (spanElement.textContent.trim() === 'pause') {
+        spanElement.textContent = 'play_arrow';  // Remplacez 'autre_contenu' par le texte souhaité
+    } else {
+        spanElement.textContent = 'pause';
+    }
+    if (animationInstance) {
+        if (animationInstance.isPaused) {
+            animationInstance.play(); 
+        } else {
+            animationInstance.pause();
+        }
+    }
+}
+
+function updateFrame() {
+    if (animationInstance) {
+        var sliderValue = document.getElementById('animation-slider').value;
+        animationInstance.goToAndStop(parseInt(sliderValue), true);
+    }
+}
+
+function hexToRgb(hex) {
+    // Convert a hex color to an RGB object
+    var bigint = parseInt(hex.slice(1), 16);
+    return { r: (bigint >> 16) & 255, g: (bigint >> 8) & 255, b: bigint & 255 };
+}
+
+function rgbToHex(r, g, b) {
+    // Convert an RGB color to a hex string
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+function componentToHex(c) {
+    var hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+}
+
+function pauseAnimation() {
+    if (animationInstance) {
+        animationInstance.pause();
+        isPaused = true;
+    }
+}
+
+// Event listener for color picker change
+document.querySelectorAll(".color-picker").forEach(function (colorPicker, index) {
+    colorPicker.addEventListener("input", function () {
+        selectedColors[index] = colorPicker.value;
+        updateColors();
+    });
+});
+
+// Setup color pickers on load
+applyColorsFromJSON();
+
+// Event listeners for Panel_X, Panel_Y, and Scale
+document.getElementById("panelX").addEventListener("input", function () {
+    updateColors();
+    playLottieAnimation(animData);
+});
+
+document.getElementById("panelY").addEventListener("input", function () {
+    updateColors();
+    playLottieAnimation(animData);
+});
+
+document.getElementById("scale").addEventListener("input", function () {
+    updateColors();
+    playLottieAnimation(animData);
+});
+
+document.querySelectorAll(".color-opacity-checkbox").forEach(function (checkbox, index) {
+    checkbox.addEventListener("change", function () {
+        var opacityValue = this.checked ? 100 : 0;
+        // You can use opacityValue as needed for your logic
+        // For example, update the corresponding color_opacity effect in the animation data
+        if (animData && animData.layers) {
+            animData.layers.forEach(function (layer) {
+                if (layer.nm === "palette" && layer.ef) {
+                    layer.ef.forEach(function (effect) {
+                        if (effect.nm === "color_opacity" + (index + 1) && effect.ef) {
+                            effect.ef.forEach(function (opacityEffect) {
+                                if (opacityEffect.nm === "Slider" && opacityEffect.v) {
+                                    opacityEffect.v.k = opacityValue;
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+        // Update the colors and play the animation
+        updateColors();
+        playLottieAnimation(animData);
+    });
+});
+
+    // Event listener for text input change
+    textArea1 .addEventListener("input", function () {
+        updateText();
+    });
+
+    textArea2 .addEventListener("input", function () {
+        updateText();
+    });
+
+    // Setup color pickers, text input, and text options on load
+    
+    applyTextFromJSON();
+    applySizeFromJSON();
+    </script>
+
+</body>
+
+</html>
