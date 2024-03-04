@@ -16,6 +16,9 @@
 
 <body>
     <main>
+        <div>
+            <input type="color" class="color-picker-player" id="color-player" value="#2b2929" title="BG player"  /> 
+        </div>
         
         <div class="container1">
             <div class="res-select">
@@ -67,38 +70,46 @@
             Palette
             <div class="ControlPalette">
                 <div class="SelectColor">
-                    <input type="color" class="color-picker" id="color-picker1" value="#ff0000" title="BG"  />
-                    <input type="color" class="color-picker" id="color-picker2" value="#00ff00" title="Text1"/>
-                    <input type="color" class="color-picker" id="color-picker3" value="#0000ff" title="Text2"/>
-                    <input type="color" class="color-picker" id="color-picker4" value="#ffff00" title="Elem1"/>
-                    <input type="color" class="color-picker" id="color-picker5" value="#ff00ff" title="Elem2"/>
-                </div>
-                <div class="SelectOpacity">
                     <div>
-                        <label for="color-opacity1">Activé</label>
-                        <input type="checkbox" id="color-opacity1" class="color-opacity-checkbox" checked>
-    
+                        <input type="color" class="color-picker" id="color-picker1" value="#ff0000" title="BG"  />
+                        <div class="SelectOpacity">
+                            <label for="color-opacity1">Activé</label>
+                            <input type="checkbox" id="color-opacity1" class="color-opacity-checkbox" checked>
+                        </div>
                     </div>
                     <div>
-                        <label for="color-opacity2">Activé</label>
-                        <input type="checkbox" id="color-opacity2" class="color-opacity-checkbox" checked>
-    
+                        <input type="color" class="color-picker" id="color-picker2" value="#00ff00" title="Text1"/>
+                        <div  class="SelectOpacity">
+                            <label for="color-opacity2">Activé</label>
+                            <input type="checkbox" id="color-opacity2" class="color-opacity-checkbox" checked>
+        
+                        </div>
                     </div>
                     <div>
-                        <label for="color-opacity3">Activé</label>
-                        <input type="checkbox" id="color-opacity3" class="color-opacity-checkbox" checked>
-    
+                        <input type="color" class="color-picker" id="color-picker3" value="#0000ff" title="Text2"/>
+                        <div  class="SelectOpacity">
+                            <label for="color-opacity3">Activé</label>
+                            <input type="checkbox" id="color-opacity3" class="color-opacity-checkbox" checked>
+        
+                        </div>
                     </div>
                     <div>
-                        <label for="color-opacity4">Activé</label>
-                        <input type="checkbox" id="color-opacity4" class="color-opacity-checkbox" checked>
-    
+                        <input type="color" class="color-picker" id="color-picker4" value="#ffff00" title="Elem1"/>
+                        <div  class="SelectOpacity">
+                            <label for="color-opacity4">Activé</label>
+                            <input type="checkbox" id="color-opacity4" class="color-opacity-checkbox" checked>
+        
+                        </div>
                     </div>
                     <div>
-                        <label for="color-opacity5">Activé</label>
-                        <input type="checkbox" id="color-opacity5" class="color-opacity-checkbox" checked>
-    
+                        <input type="color" class="color-picker" id="color-picker5" value="#ff00ff" title="Elem2"/>
+                        <div  class="SelectOpacity">
+                            <label for="color-opacity5">Activé</label>
+                            <input type="checkbox" id="color-opacity5" class="color-opacity-checkbox" checked>
+        
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -155,6 +166,14 @@ var fontSizeInput1 = document.getElementById('font-size-input-1');
 var fontSizeInput2 = document.getElementById('font-size-input-2');
 var spanElement = document.querySelector('.playpause');
 
+var ColorPlayer = document.getElementById('color-player');
+
+ColorPlayer.addEventListener('input', function() {
+    var newColor = ColorPlayer.value;
+
+    document.body.style.backgroundColor = newColor;
+});
+
 var inputFields = ["panelX", "panelY", "scale", "font-size-input-1", "font-size-input-2"];
 
 inputFields.forEach(function (field) {
@@ -190,9 +209,12 @@ function updateInputValue(inputId, step) {
     var currentValue = parseFloat(inputElement.value) || 0;
     var newValue = currentValue + step;
     inputElement.value = newValue;
-    updateColors();
-    updateSize();
-    playLottieAnimation(animData);
+    if(inputId == "panelX" || inputId == "panelY" || inputId == "scale"){
+        updatePanel();
+    }else{
+        updateSize();
+    }
+    
 }
 
 function adjustTextareaHeight() {
@@ -275,6 +297,8 @@ function handleDrop(event) {
             DetectFormat();
             playLottieAnimation(animData);
             FreezeFrame();
+            DesacColor();
+            DesacOpacity();
         };
         reader.readAsText(files[0]);
     }
@@ -284,19 +308,30 @@ function handleDragOver(event) {
     event.preventDefault();
 }
 
+var textareas = document.querySelectorAll('.ControlText textarea');
+
 function AlignRight() {
     Align(1); 
-    DetectAlign()
+    DetectAlign();
+    textareas.forEach(function (textarea) {
+    textarea.style.textAlign = 'right'; 
+});
 }
 
 function AlignCenter() {
     Align(2); 
-    DetectAlign()
+    DetectAlign();
+    textareas.forEach(function (textarea) {
+    textarea.style.textAlign = 'center'; 
+});
 }
 
 function AlignLeft() {
     Align(0); 
-    DetectAlign()
+    DetectAlign();
+    textareas.forEach(function (textarea) {
+    textarea.style.textAlign = 'left'; 
+});
 }
 
 function FormatHor() {
@@ -327,6 +362,46 @@ function ToggleGrid() {
 
 }
 
+function DesacColor() {
+    if (animData && animData.layers) {
+        animData.layers.forEach(function (layer) {
+            if (layer.nm === "palette" && layer.ef) {
+                for (var i = 1; i <= 5; i++) {
+                    var colorPicker = document.getElementById("color-picker" + i);
+                    colorPicker.disabled = true;
+
+                    layer.ef.forEach(function (effect) {
+                        if (effect.nm === "color" + i) {
+                            colorPicker.disabled = false;
+                            return; // Sortir de la boucle interne si un effet correspondant est trouvé
+                        }
+                    });
+                }
+            }
+        });
+    }
+}
+
+function DesacOpacity() {
+    if (animData && animData.layers) {
+        animData.layers.forEach(function (layer) {
+            if (layer.nm === "palette" && layer.ef) {
+                for (var i = 1; i <= 5; i++) {
+                    var colorPicker = document.getElementById("color-opacity" + i);
+                    colorPicker.disabled = true;
+
+                    layer.ef.forEach(function (effect) {
+                        if (effect.nm === "color_opacity" + i) {
+                            colorPicker.disabled = false;
+                            return; // Sortir de la boucle interne si un effet correspondant est trouvé
+                        }
+                    });
+                }
+            }
+        });
+    }
+}
+
 function applyColorsFromJSON() {
     // Reset all color pickers to black
     for (var i = 1; i <= 5; i++) {
@@ -334,7 +409,6 @@ function applyColorsFromJSON() {
         colorPicker.value = "#000000";
         selectedColors[i - 1] = "#000000"; // Default to black
     }
-
     // Set color pickers based on the colors present in the new animation JSON
     if (animData && animData.layers) {
         animData.layers.forEach(function (layer) {
@@ -514,28 +588,9 @@ function applyTextFromJSON() {
         }
     }
 
-
-function updateColors() {
-    if (animationInstance && animData && animData.layers) {
-        animData.layers.forEach(function (layer) {
-            if (layer.nm === "palette" && layer.ef) {
-                layer.ef.forEach(function (effect) {
-                    for (var i = 1; i <= 5; i++) {
-                        var colorPicker = document.getElementById("color-picker" + i);
-                        if (effect.nm === "color" + i && effect.ef && colorPicker) {
-                            effect.ef.forEach(function (subEffect) {
-                                if (subEffect.nm === "Color" && subEffect.v) {
-                                    subEffect.v.k = [hexToRgb(colorPicker.value).r / 255, hexToRgb(colorPicker.value).g / 255, hexToRgb(colorPicker.value).b / 255, 1];
-                                }
-                            });
-                        }
-                    }
-                });
-            }
-        });
-
-        // Update Panel_X, Panel_Y, and Scale
-        if (animData.layers) {
+function updatePanel(){
+            // Update Panel_X, Panel_Y, and Scale
+            if (animData.layers) {
             animData.layers.forEach(function (layer) {
                 // For "control_panel" layer
                 if (layer.nm === "control_panel" && layer.ef) {
@@ -564,7 +619,36 @@ function updateColors() {
                     layer.ks.s.k[1] = parseFloat(document.getElementById("scale").value) || 100;
                 }
             });
+                    // Save the current frame
+        currentFrame = animationInstance.currentFrame;
+        // Reload the animation with updated colors
+        lottie.destroy();
+        playLottieAnimation(animData);
+        // Go to the saved frame
+        animationInstance.goToAndStop(currentFrame, true);
         }
+}
+
+
+function updateColors() {
+    if (animationInstance && animData && animData.layers) {
+        animData.layers.forEach(function (layer) {
+            if (layer.nm === "palette" && layer.ef) {
+                layer.ef.forEach(function (effect) {
+                    for (var i = 1; i <= 5; i++) {
+                        var colorPicker = document.getElementById("color-picker" + i);
+                        if (effect.nm === "color" + i && effect.ef && colorPicker) {
+                            effect.ef.forEach(function (subEffect) {
+                                if (subEffect.nm === "Color" && subEffect.v) {
+                                    subEffect.v.k = [hexToRgb(colorPicker.value).r / 255, hexToRgb(colorPicker.value).g / 255, hexToRgb(colorPicker.value).b / 255, 1];
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+
 
         
 
@@ -586,10 +670,6 @@ function updateText() {
 
             if (textLayer) {
                 textLayer.t.d.k[0].s.t = textArea1 .value.replace(/\n/g, "\r");
-                currentFrame = animationInstance.currentFrame;
-                lottie.destroy();
-                playLottieAnimation(animData);
-                animationInstance.goToAndStop(currentFrame, true);
             }
         }
 
@@ -600,6 +680,15 @@ function updateText() {
 
             if (textLayer2) {
                 textLayer2.t.d.k[0].s.t = textArea2 .value.replace(/\n/g, "\r");
+            }
+        }
+
+        if (animationInstance && animData && animData.layers) {
+            var textLayer = animData.layers.find(function (layer) {
+                return layer.nm === "text1" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
+            });
+
+            if (textLayer) {
                 currentFrame = animationInstance.currentFrame;
                 lottie.destroy();
                 playLottieAnimation(animData);
@@ -613,7 +702,7 @@ function updateText() {
             animData.markers.forEach(function (marker) {
                 if (marker.cm === "freeze") {
                     freeze = marker.tm;
-                    console.log(freeze);
+                    console.log("freeze frame : "+freeze);
                     playLottieAnimation(animData);
                     animationInstance.goToAndStop(freeze, true);
                 }
@@ -629,10 +718,6 @@ function updateText() {
 
             if (textLayer) {
                 textLayer.t.d.k[0].s.s = parseFloat(fontSizeInput1.value) || 100;
-                currentFrame = animationInstance.currentFrame;
-                lottie.destroy();
-                playLottieAnimation(animData);
-                animationInstance.goToAndStop(currentFrame, true);
             }
         }
 
@@ -643,10 +728,6 @@ function updateText() {
 
             if (textLayer) {
                 textLayer.t.d.k[0].s.s = parseFloat(fontSizeInput1.value) || 100;
-                currentFrame = animationInstance.currentFrame;
-                lottie.destroy();
-                playLottieAnimation(animData);
-                animationInstance.goToAndStop(currentFrame, true);
             }
         }
 
@@ -657,10 +738,6 @@ function updateText() {
 
             if (textLayer2) {
                 textLayer2.t.d.k[0].s.s =  parseFloat(fontSizeInput2.value) || 100;
-                currentFrame = animationInstance.currentFrame;
-                lottie.destroy();
-                playLottieAnimation(animData);
-                animationInstance.goToAndStop(currentFrame, true);
             }
         }
 
@@ -671,6 +748,15 @@ function updateText() {
 
             if (textLayer) {
                 textLayer.t.d.k[0].s.s = parseFloat(fontSizeInput2.value) || 100;
+            }
+        }
+
+        if (animationInstance && animData && animData.layers) {
+            var textLayer = animData.layers.find(function (layer) {
+                return layer.nm === "text1" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
+            });
+
+            if (textLayer) {
                 currentFrame = animationInstance.currentFrame;
                 lottie.destroy();
                 playLottieAnimation(animData);
@@ -696,34 +782,6 @@ function updateText() {
             });
         }
 
-        if (animationInstance && animData && animData.layers) {
-            var textLayer = animData.layers.find(function (layer) {
-                return layer.nm === "text1" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
-            });
-
-            if (textLayer) {
-                textLayer.t.d.k[0].s.j = AlignValue;
-                currentFrame = animationInstance.currentFrame;
-                lottie.destroy();
-                playLottieAnimation(animData);
-                animationInstance.goToAndStop(currentFrame, true);
-            }
-        }
-
-        if (animationInstance && animData && animData.layers) {
-            var textLayer = animData.layers.find(function (layer) {
-                return layer.nm === "text1_template" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
-            });
-
-            if (textLayer) {
-                textLayer.t.d.k[0].s.j = AlignValue;
-                currentFrame = animationInstance.currentFrame;
-                lottie.destroy();
-                playLottieAnimation(animData);
-                animationInstance.goToAndStop(currentFrame, true);
-            }
-        }
-
         if (animData && animData.layers) {
             animData.layers.forEach(function (layer) {
                 if (layer.nm === "text2" && layer.ef) {
@@ -741,33 +799,24 @@ function updateText() {
         }
 
         if (animationInstance && animData && animData.layers) {
-            var textLayer = animData.layers.find(function (layer) {
-                return layer.nm === "text2" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
-            });
+    for (var i = 0; i < animData.layers.length; i++) {
+        var currentLayer = animData.layers[i];
 
-            if (textLayer) {
-                textLayer.t.d.k[0].s.j = AlignValue;
-                currentFrame = animationInstance.currentFrame;
-                lottie.destroy();
-                playLottieAnimation(animData);
-                animationInstance.goToAndStop(currentFrame, true);
-            }
-        }
-
-        if (animationInstance && animData && animData.layers) {
-            var textLayer = animData.layers.find(function (layer) {
-                return layer.nm === "text2_template" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
-            });
-
-            if (textLayer) {
-                textLayer.t.d.k[0].s.j = AlignValue;
-                currentFrame = animationInstance.currentFrame;
-                lottie.destroy();
-                playLottieAnimation(animData);
-                animationInstance.goToAndStop(currentFrame, true);
-            }
+        // Vérifiez si le layer a la propriété "t" avec "d" et "k"
+        if (currentLayer.t && currentLayer.t.d && currentLayer.t.d.k && currentLayer.t.d.k[0] && currentLayer.t.d.k[0].s) {
+            // Mettez à jour la valeur de "j"
+            currentLayer.t.d.k[0].s.j = AlignValue;
         }
     }
+
+    // Mettez à jour l'animation une fois que toutes les modifications sont faites
+    currentFrame = animationInstance.currentFrame;
+    lottie.destroy();
+    playLottieAnimation(animData);
+    animationInstance.goToAndStop(currentFrame, true);
+}
+
+}
 
     function Format(FormatValue) {
         if (animData) {
@@ -835,7 +884,7 @@ function playLottieAnimation(animationData) {
     document.getElementById('animation-slider').addEventListener('input', function () {
         updateFrame();
     });
-    spanElement.textContent = 'play_arrow';
+    
 
     // Go to the saved frame
     animationInstance.goToAndStop(currentFrame, true);
@@ -901,18 +950,18 @@ applyColorsFromJSON();
 
 // Event listeners for Panel_X, Panel_Y, and Scale
 document.getElementById("panelX").addEventListener("input", function () {
-    updateColors();
-    playLottieAnimation(animData);
+    updatePanel();
+  
 });
 
 document.getElementById("panelY").addEventListener("input", function () {
-    updateColors();
-    playLottieAnimation(animData);
+    updatePanel();
+ 
 });
 
 document.getElementById("scale").addEventListener("input", function () {
-    updateColors();
-    playLottieAnimation(animData);
+    updatePanel();
+ 
 });
 
 document.querySelectorAll(".color-opacity-checkbox").forEach(function (checkbox, index) {
