@@ -301,3 +301,45 @@ min-width: 235.028px;
   border-radius: 15px;
   border: none;
 }
+
+#TextPalette1{
+  display: none;
+  text-align: center;
+  border-radius: 100px;
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  font-size: 20px;
+}
+
+#TextPalette2{
+  display: none;
+  text-align: center;
+  border-radius: 100px;
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  font-size: 20px;
+}
+
+.color-picker-text{
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  width: 35px !important;
+  height: 35px !important;
+  border: none;
+  cursor: pointer;
+  margin: -10px -5px -10px -5px;
+}
+
+.color-picker-text::-webkit-color-swatch {
+  border-radius: 10%;
+  border: 1px solid #575757;
+}
+
+.color-picker-tex::-moz-color-swatch {
+  border-radius: 10%;
+  border: 1px solid #000000;
+}
