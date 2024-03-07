@@ -141,8 +141,8 @@
                     format_align_right
                     </span></button>
             </div>
-            <div><textarea id="text-input" placeholder="Text 1" rows="1"></textarea><input type="text" placeholder="Size" id="font-size-input-1" class="font-size-input" min="1" value=""></div>
-            <div><textarea id="text-input-2" class="text-input" placeholder="Text 2" rows="1"></textarea><input  type="text" placeholder="Size" id="font-size-input-2" class="font-size-input" min="1" value=""></div>
+            <div>   <textarea id="text-input" placeholder="Text 1" rows="1"></textarea>  <input type="text" placeholder="Size" id="font-size-input-1" class="font-size-input" min="1" value="">   <input type="color" class="color-picker-text" id="color-picker-text1" value="#000000" title="ColorText1" disabled/>    <button id="TextPalette1"><span class="material-symbols-outlined">close</span></button></div>
+            <div>   <textarea id="text-input-2" class="text-input" placeholder="Text 2" rows="1"></textarea>    <input  type="text" placeholder="Size" id="font-size-input-2" class="font-size-input" min="1" value=""> <input type="color" class="color-picker-text" id="color-picker-text2" value="#000000" title="ColorText2" disabled/> <button id="TextPalette2"><span class="material-symbols-outlined">close</span></button></div>
            
             
         </div>
@@ -295,6 +295,7 @@ function handleDrop(event) {
             applySizeFromJSON();
             DetectAlign();
             DetectFormat();
+            DetectColorText();
             playLottieAnimation(animData);
             FreezeFrame();
             DesacColor();
@@ -380,6 +381,34 @@ function DesacColor() {
             }
         });
     }
+    if (animData.assets && animData.assets.length > 0) {
+    animData.assets.forEach(function (asset) {
+        if (asset.layers) 
+        {
+            var LayersAsset = asset.layers.filter(function (layer) {
+                return layer.nm === "palette" && layer.ks && layer.ks.s && (layer.isAdjustment === undefined);
+            });
+
+            LayersAsset.forEach(function (layer) {
+                if (layer.nm === "palette" && layer.ef) {
+                for (var i = 1; i <= 5; i++) {
+                    var colorPicker = document.getElementById("color-picker" + i);
+                    colorPicker.disabled = true;
+
+                    layer.ef.forEach(function (effect) {
+                        if (effect.nm === "color" + i) {
+                            colorPicker.disabled = false;
+                            return; // Sortir de la boucle interne si un effet correspondant est trouvé
+                        }
+                    });
+                }
+            }
+            });
+
+      
+        }
+    });
+}
 }
 
 function DesacOpacity() {
@@ -400,6 +429,35 @@ function DesacOpacity() {
             }
         });
     }
+
+    if (animData.assets && animData.assets.length > 0) {
+    animData.assets.forEach(function (asset) {
+        if (asset.layers) 
+        {
+            var LayersAsset = asset.layers.filter(function (layer) {
+                return layer.nm === "palette" && layer.ks && layer.ks.s && (layer.isAdjustment === undefined);
+            });
+
+            LayersAsset.forEach(function (layer) {
+                if (layer.nm === "palette" && layer.ef) {
+                for (var i = 1; i <= 5; i++) {
+                    var colorPicker = document.getElementById("color-opacity" + i);
+                    colorPicker.disabled = true;
+
+                    layer.ef.forEach(function (effect) {
+                        if (effect.nm === "color_opacity" + i) {
+                            colorPicker.disabled = false;
+                            return; // Sortir de la boucle interne si un effet correspondant est trouvé
+                        }
+                    });
+                }
+            }
+            });
+
+      
+        }
+    });
+}
 }
 
 function applyColorsFromJSON() {
@@ -435,7 +493,45 @@ function applyColorsFromJSON() {
         });
 
         // Set Panel_X, Panel_Y, and Scale based on the values present in the new animation JSON
-        if (animData.layers) {
+    }
+
+    if (animData.assets && animData.assets.length > 0) {
+    animData.assets.forEach(function (asset) {
+        if (asset.layers) 
+        {
+            var LayersAsset = asset.layers.filter(function (layer) {
+                return layer.nm === "palette" && layer.ks && layer.ks.s && (layer.isAdjustment === undefined);
+            });
+
+            LayersAsset.forEach(function (layer) {
+                if (layer.nm === "palette" && layer.ef) {
+                layer.ef.forEach(function (effect) {
+                    for (var i = 1; i <= 5; i++) {
+                        var colorPicker = document.getElementById("color-picker" + i);
+                        if (effect.nm === "color" + i && effect.ef && colorPicker) {
+                            effect.ef.forEach(function (subEffect) {
+                                if (subEffect.nm === "Color" && subEffect.v) {
+                                    var colorValue = rgbToHex(
+                                        Math.round(subEffect.v.k[0] * 255),
+                                        Math.round(subEffect.v.k[1] * 255),
+                                        Math.round(subEffect.v.k[2] * 255)
+                                    );
+                                    colorPicker.value = colorValue;
+                                    selectedColors[i - 1] = colorValue;
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+            });
+
+      
+        }
+    });
+}
+
+    if (animData.layers) {
             animData.layers.forEach(function (layer) {
                 // For "control_panel" layer
                 if (layer.nm === "control_panel" && layer.ef) {
@@ -464,6 +560,80 @@ function applyColorsFromJSON() {
                 }
             });
         }
+
+        if (animData.assets && animData.assets.length > 0) {
+    animData.assets.forEach(function (asset) {
+        if (asset.layers) 
+        {
+            var LayersAsset = asset.layers.filter(function (layer) {
+                return layer.nm === "control_panel" && layer.ks && layer.ks.s && (layer.isAdjustment === undefined);
+            });
+
+            LayersAsset.forEach(function (layer) {
+                if (layer.nm === "control_panel" && layer.ef) {
+                    layer.ef.forEach(function (effect) {
+                        if (effect.nm === "Panel_X" && effect.ef) {
+                            effect.ef.forEach(function (panelXEffect) {
+                                if (panelXEffect.nm === "Slider" && panelXEffect.v) {
+                                    document.getElementById("panelX").value = panelXEffect.v.k || 0;
+                                }
+                            });
+                        }
+
+                        if (effect.nm === "Panel_Y" && effect.ef) {
+                            effect.ef.forEach(function (panelYEffect) {
+                                if (panelYEffect.nm === "Slider" && panelYEffect.v) {
+                                    document.getElementById("panelY").value = panelYEffect.v.k || 0;
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+
+            var LayersAsset = asset.layers.filter(function (layer) {
+                return layer.nm === "scale" && layer.ks && layer.ks.s && (layer.isAdjustment === undefined);
+            });
+
+            LayersAsset.forEach(function (layer) {
+                if (layer.nm === "scale" && layer.ks && layer.ks.s) {
+                    document.getElementById("scale").value = layer.ks.s.k[0] || 100;
+                }
+            });
+
+      
+        }
+    });
+}
+}
+
+function DetectColorText() {
+    for (var i = 1; i <= 2; i++) {
+        var colorPicker = document.getElementById("color-picker-text" + i);
+        var textPalette = document.getElementById("TextPalette" +i);
+        textPalette.style.display = "none";
+        colorPicker.value = "#000000";
+        selectedColors[i - 1] = "#000000"; // Default to black
+        colorPicker.style.display = "none"; 
+
+        if (animData && animData.layers) {
+        animData.layers.forEach(function (layer) {
+                if (layer.nm === "text"+i && layer.t.a) {
+                layer.t.a.forEach(function (effect) {
+                    if (effect.nm === "Color_Palette") {
+                        colorPicker.style.display = "block";
+                        colorPicker.disabled = false;
+                        }else{
+                            colorPicker.style.display = "none"; 
+                            colorPicker.disabled = false;
+                        }
+                });
+            }
+        });
+
+        // Set Panel_X, Panel_Y, and Scale based on the values present in the new animation JSON
+    }
+    
     }
 }
 
@@ -499,6 +669,41 @@ document.querySelectorAll('.Alignment button').forEach(function(btn) {
                 }
             });
         }
+
+        if (animData.assets && animData.assets.length > 0) {
+    animData.assets.forEach(function (asset) {
+        if (asset.layers) 
+        {
+            var LayersAsset = asset.layers.filter(function (layer) {
+                return layer.nm === "text1" && layer.ks && layer.ks.s && (layer.isAdjustment === undefined);
+            });
+
+            LayersAsset.forEach(function (layer) {
+                if (layer.nm === "text1" && layer.ef) {
+                    layer.ef.forEach(function (effect) {
+                        if (effect.nm === "T_Alignment" && effect.ef) {
+                            effect.ef.forEach(function (AlignEffect) {
+                                if (AlignEffect.nm === "Slider" && AlignEffect.v) {
+                                    if(AlignEffect.v.k == 0){
+                                        alignLeftButton.classList.add(className);
+                                    }
+                                    if(AlignEffect.v.k == 1){
+                                        alignRightButton.classList.add(className);
+                                    }
+                                    if(AlignEffect.v.k == 2){
+                                        alignCenterButton.classList.add(className);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+
+      
+        }
+    });
+}
 }
 
 
@@ -522,71 +727,145 @@ for (var i = 0; i < 3; i++) {
         if(animData.w == 1080 && animData.h == 1920){
             VerButton.classList.add(className);
         }
-        
-        
         }
 }
+
+
 
 function applyTextFromJSON() {
         // Check if there is a layer named "text1"
         var CtrlTxt = document.querySelector('.ControlText');
-        var textLayer = animData.layers.find(function (layer) {
-            return layer.nm === "text1" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
-        });
 
-        // If the layer is found, update the text input with its value
-        if (textLayer) {
-            textArea1 .value = textLayer.t.d.k[0].s.t;
+        if (animData.layers) {
+            var textLayers = animData.layers.find(function (layer) {
+                return layer.nm === "text1" && layer.ks && layer.ks.s;
+            });
+        
+            if (textLayers) {
+            textArea1 .value = textLayers.t.d.k[0].s.t;
             textArea1 .style.display = "block";
             CtrlTxt .style.display = "flex";
-        } else {
+            }else {
+                if (animData.assets[0] && animData.assets[0].layers) {
+            var textLayersAsset = animData.assets[0].layers.find(function (layer) {
+                return layer.nm === "text1" && layer.t && layer.t.d;
+            });
+
+            if (textLayersAsset) {
+            textArea1 .value = textLayersAsset.t.d.k[0].s.t;
+            textArea1 .style.display = "block";
+            CtrlTxt .style.display = "flex";
+            }else {
             // If the layer is not found, hide the text input
             textArea1 .style.display = "none";
             CtrlTxt .style.display = "none";
+            }
+            
+        }else{
+            textArea1 .style.display = "none";
+            CtrlTxt .style.display = "none";
+        }
+            }
+            
         }
 
-        var textLayer2 = animData.layers.find(function (layer) {
-            return layer.nm === "text2" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
-        });
+        // Vérifiez si les couches sont dans animData.assets[0].layers
 
-        // If the layer is found, update the text input with its value
-        if (textLayer2) {
-            textArea2 .value = textLayer2.t.d.k[0].s.t;
+
+        if (animData.layers) {
+            var textLayers = animData.layers.find(function (layer) {
+                return layer.nm === "text2" && layer.t && layer.t.d;
+            });
+        
+            if (textLayers) {
+            textArea2 .value = textLayers.t.d.k[0].s.t;
             textArea2 .style.display = "block";
-        } else {
+            }else {
+                if (animData.assets[0] && animData.assets[0].layers) {
+            var textLayersAsset = animData.assets[0].layers.find(function (layer) {
+                return layer.nm === "text2" && layer.t && layer.t.d;
+            });
+
+            if (textLayersAsset) {
+            textArea2 .value = textLayersAsset.t.d.k[0].s.t;
+            textArea2 .style.display = "block";
+            }else {
             // If the layer is not found, hide the text input
             textArea2 .style.display = "none";
+            }
+            
+        }else{
+            textArea2 .style.display = "none";
         }
+            }
+            
+        }
+
+        // Vérifiez si les couches sont dans animData.assets[0].layers
+        
     }
 
     function applySizeFromJSON() {
-        // Check if there is a layer named "text1"
-        var textLayer = animData.layers.find(function (layer) {
-            return layer.nm === "text1" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
-        });
-
-        // If the layer is found, update the text input with its value
-        if (textLayer) {
-            fontSizeInput1 .value = textLayer.t.d.k[0].s.s;
+        if (animData.layers) {
+            var textLayers = animData.layers.find(function (layer) {
+                return layer.nm === "text1" && layer.ks && layer.ks.s;
+            });
+        
+            if (textLayers) {
+                fontSizeInput1 .value = textLayers.ks.s.k[0];
             fontSizeInput1 .style.display = "block";
-        } else {
+            }else {
+                if (animData.assets[0] && animData.assets[0].layers) {
+            var textLayersAsset = animData.assets[0].layers.find(function (layer) {
+                return layer.nm === "text1" && layer.t && layer.t.d;
+            });
+
+            if (textLayersAsset) {
+                fontSizeInput1 .value = textLayersAsset.ks.s.k[0];
+            fontSizeInput1 .style.display = "block";
+            }else {
             // If the layer is not found, hide the text input
             fontSizeInput1 .style.display = "none";
+            }
+            
+        }else{
+            fontSizeInput1 .style.display = "none";
+        }
+            }
+            
         }
 
-        var textLayer2 = animData.layers.find(function (layer) {
-            return layer.nm === "text2" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
-        });
-
-        // If the layer is found, update the text input with its value
-        if (textLayer2) {
-            fontSizeInput2 .value = textLayer2.t.d.k[0].s.s;
+        if (animData.layers) {
+            var textLayers = animData.layers.find(function (layer) {
+                return layer.nm === "text2" && layer.ks && layer.ks.s;
+            });
+        
+            if (textLayers) {
+                fontSizeInput2 .value = textLayers.ks.s.k[0];
             fontSizeInput2 .style.display = "block";
-        } else {
+            }else {
+                if (animData.assets[0] && animData.assets[0].layers) {
+            var textLayersAsset = animData.assets[0].layers.find(function (layer) {
+                return layer.nm === "text2" && layer.t && layer.t.d;
+            });
+
+            if (textLayersAsset) {
+                fontSizeInput1 .value = textLayersAsset.ks.s.k[0];
+            fontSizeInput2 .style.display = "block";
+            }else {
             // If the layer is not found, hide the text input
             fontSizeInput2 .style.display = "none";
+            }
+            
+        }else{
+            fontSizeInput2 .style.display = "none"; 
         }
+            }
+            
+        }
+
     }
+    
 
 function updatePanel(){
             // Update Panel_X, Panel_Y, and Scale
@@ -619,14 +898,64 @@ function updatePanel(){
                     layer.ks.s.k[1] = parseFloat(document.getElementById("scale").value) || 100;
                 }
             });
-                    // Save the current frame
+
+        }
+
+        if (animData.assets && animData.assets.length > 0) {
+    animData.assets.forEach(function (asset) {
+        if (asset.layers) 
+        {
+            var LayersAsset = asset.layers.filter(function (layer) {
+                return layer.nm === "control_panel" && layer.ks && layer.ks.s && (layer.isAdjustment === undefined);
+            });
+
+            LayersAsset.forEach(function (layer) {
+                if (layer.nm === "control_panel" && layer.ef) {
+                    layer.ef.forEach(function (effect) {
+                        if (effect.nm === "Panel_X" && effect.ef) {
+                            effect.ef.forEach(function (panelXEffect) {
+                                if (panelXEffect.nm === "Slider" && panelXEffect.v) {
+                                    panelXEffect.v.k = parseFloat(document.getElementById("panelX").value) || 0;
+                                }
+                            });
+                        }
+
+                        if (effect.nm === "Panel_Y" && effect.ef) {
+                            effect.ef.forEach(function (panelYEffect) {
+                                if (panelYEffect.nm === "Slider" && panelYEffect.v) {
+                                    panelYEffect.v.k = parseFloat(document.getElementById("panelY").value) || 0;
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+
+            var LayersAsset = asset.layers.filter(function (layer) {
+                return layer.nm === "scale" && layer.ks && layer.ks.s && (layer.isAdjustment === undefined);
+            });
+
+            LayersAsset.forEach(function (layer) {
+                if (layer.nm === "scale" && layer.ks && layer.ks.s) {
+                    layer.ks.s.k[0] = parseFloat(document.getElementById("scale").value) || 100;
+                    layer.ks.s.k[1] = parseFloat(document.getElementById("scale").value) || 100;
+                }
+            });
+
+      
+        }
+    });
+}
+        
+
+                            // Save the current frame
         currentFrame = animationInstance.currentFrame;
         // Reload the animation with updated colors
         lottie.destroy();
         playLottieAnimation(animData);
         // Go to the saved frame
         animationInstance.goToAndStop(currentFrame, true);
-        }
+        spanElement.textContent = 'play_arrow';
 }
 
 
@@ -648,9 +977,37 @@ function updateColors() {
                 });
             }
         });
+    }
 
+    if (animData.assets && animData.assets.length > 0) {
+    animData.assets.forEach(function (asset) {
+        if (asset.layers) 
+        {
+            var LayersAsset = asset.layers.filter(function (layer) {
+                return layer.nm === "palette" && layer.ks && layer.ks.s && (layer.isAdjustment === undefined);
+            });
 
-        
+            LayersAsset.forEach(function (layer) {
+                if (layer.nm === "palette" && layer.ef) {
+                layer.ef.forEach(function (effect) {
+                    for (var i = 1; i <= 5; i++) {
+                        var colorPicker = document.getElementById("color-picker" + i);
+                        if (effect.nm === "color" + i && effect.ef && colorPicker) {
+                            effect.ef.forEach(function (subEffect) {
+                                if (subEffect.nm === "Color" && subEffect.v) {
+                                    subEffect.v.k = [hexToRgb(colorPicker.value).r / 255, hexToRgb(colorPicker.value).g / 255, hexToRgb(colorPicker.value).b / 255, 1];
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+            });
+
+      
+        }
+    });
+}
 
         // Save the current frame
         currentFrame = animationInstance.currentFrame;
@@ -659,43 +1016,131 @@ function updateColors() {
         playLottieAnimation(animData);
         // Go to the saved frame
         animationInstance.goToAndStop(currentFrame, true);
+        spanElement.textContent = 'play_arrow';
+}
+
+function UpdateColorText(Picker, Palette){
+        var colorPicker = document.getElementById("color-picker-text" + (Picker+1));
+        var textPalette = document.getElementById("TextPalette" + (Picker+1));
+        if(Palette == 0){
+            textPalette.style.display = "block";
+        }else{
+            textPalette.style.display = "none";
+        }
+        
+
+        if (animData && animData.layers) {
+        animData.layers.forEach(function (layer) {
+                if (layer.nm === "text"+(Picker+1) && layer.t.a) {
+                layer.t.a.forEach(function (effect) {
+                    if(Palette == 1){
+                        if (effect.nm === "Color_Text" && effect.a.fc.k) {
+                        effect.a.fc.k = [hexToRgb(colorPicker.value).r / 255, hexToRgb(colorPicker.value).g / 255, hexToRgb(colorPicker.value).b / 255, 1];
+                        }
+                        if (effect.nm === "Color_Palette" && effect.s.e.k) {
+                            effect.s.e.k = 99;
+                        }
+                    }else{
+                        if (effect.nm === "Color_Text" && effect.a.fc.k) {
+                        effect.a.fc.k = [hexToRgb(colorPicker.value).r / 255, hexToRgb(colorPicker.value).g / 255, hexToRgb(colorPicker.value).b / 255, 1];
+                        }
+                        if (effect.nm === "Color_Palette" && effect.s.e.k) {
+                            effect.s.e.k = 1;
+                        }
+                    }
+                });
+            }
+        });
+
+    }
+
+    if (animData.assets && animData.assets.length > 0) {
+    animData.assets.forEach(function (asset) {
+        if (asset.layers) 
+        {
+            var LayersAsset = asset.layers.filter(function (layer) {
+                return layer.nm === "text"+(Picker+1) && layer.ks && layer.ks.s && (layer.isAdjustment === undefined);
+            });
+
+            LayersAsset.forEach(function (layer) {
+                layer.t.a.forEach(function (effect) {
+                    if(Palette == 1){
+                        if (effect.nm === "Color_Text" && effect.a.fc.k) {
+                        effect.a.fc.k = [hexToRgb(colorPicker.value).r / 255, hexToRgb(colorPicker.value).g / 255, hexToRgb(colorPicker.value).b / 255, 1];
+                        }
+                        if (effect.nm === "Color_Palette" && effect.s.e.k) {
+                            effect.s.e.k = 99;
+                        }
+                    }else{
+                        if (effect.nm === "Color_Text" && effect.a.fc.k) {
+                        effect.a.fc.k = [hexToRgb(colorPicker.value).r / 255, hexToRgb(colorPicker.value).g / 255, hexToRgb(colorPicker.value).b / 255, 1];
+                        }
+                        if (effect.nm === "Color_Palette" && effect.s.e.k) {
+                            effect.s.e.k = 1;
+                        }
+                    }
+                });
+            });
+
+      
+        }
+    });
+}
+    
+
+            // Save the current frame
+            currentFrame = animationInstance.currentFrame;
+        // Reload the animation with updated colors
+        lottie.destroy();
+        playLottieAnimation(animData);
+        // Go to the saved frame
+        animationInstance.goToAndStop(currentFrame, true);
+        spanElement.textContent = 'play_arrow';
+}
+
+function updateTextForLayer(layerName, textareaValue) {
+    if (animationInstance && animData) {
+        // Vérifiez si les couches sont directement dans animData.layers
+        if (animData.layers) {
+            var textLayers = animData.layers.filter(function (layer) {
+                return layer.nm === layerName && layer.ks && layer.ks.s;
+            });
+
+            textLayers.forEach(function (textLayer) {
+                textLayer.t.d.k[0].s.t = textareaValue.replace(/\n/g, "\r");
+            });
+        }
+
+    if (animData.assets && animData.assets.length > 0) {
+    animData.assets.forEach(function (asset) {
+        if (asset.layers) {
+            var textLayersAsset = asset.layers.filter(function (layer) {
+                return layer.nm === layerName && layer.ks && layer.ks.s && (layer.isAdjustment === undefined);
+            });
+
+            textLayersAsset.forEach(function (textLayerAsset) {
+                textLayerAsset.t.d.k[0].s.t = textareaValue.replace(/\n/g, "\r");
+            });
+        }
+    });
+}
+
+        
     }
 }
 
 function updateText() {
-        if (animationInstance && animData && animData.layers) {
-            var textLayer = animData.layers.find(function (layer) {
-                return layer.nm === "text1" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
-            });
+updateTextForLayer("text1", textArea1.value);
+updateTextForLayer("text2", textArea2.value);
 
-            if (textLayer) {
-                textLayer.t.d.k[0].s.t = textArea1 .value.replace(/\n/g, "\r");
-            }
-        }
-
-        if (animationInstance && animData && animData.layers) {
-            var textLayer2 = animData.layers.find(function (layer) {
-                return layer.nm === "text2" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
-            });
-
-            if (textLayer2) {
-                textLayer2.t.d.k[0].s.t = textArea2 .value.replace(/\n/g, "\r");
-            }
-        }
-
-        if (animationInstance && animData && animData.layers) {
-            var textLayer = animData.layers.find(function (layer) {
-                return layer.nm === "text1" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
-            });
-
-            if (textLayer) {
+        if (animationInstance && animData) {
                 currentFrame = animationInstance.currentFrame;
                 lottie.destroy();
                 playLottieAnimation(animData);
                 animationInstance.goToAndStop(currentFrame, true);
-            }
+                spanElement.textContent = 'play_arrow';
         }
-    }
+}
 
     function FreezeFrame() {
     if (animData.markers) {
@@ -710,65 +1155,87 @@ function updateText() {
         }
 }
 
+
+function updateAllSize(layerName, textareaValue) {
+    if (animationInstance && animData) {
+        // Vérifiez si les couches sont directement dans animData.layers
+        if (animData.layers) {
+            var textLayers = animData.layers.filter(function (layer) {
+                return layer.nm === layerName && layer.ks && layer.ks.s;
+            });
+
+            textLayers.forEach(function (textLayer) {
+                textLayer.ks.s.k[0] = parseFloat(textareaValue) || 100;
+                textLayer.ks.s.k[1] = parseFloat(textareaValue) || 100;
+            });
+
+            var textLayers = animData.layers.filter(function (layer) {
+                return layer.nm === layerName+"_template" && layer.ks && layer.ks.s;
+            });
+
+            textLayers.forEach(function (textLayer) {
+                textLayer.ks.s.k[0] = parseFloat(textareaValue) || 100;
+                textLayer.ks.s.k[1] = parseFloat(textareaValue) || 100;
+            });
+        }
+
+    if (animData.assets && animData.assets.length > 0) {
+    animData.assets.forEach(function (asset) {
+        if (asset.layers) {
+            var textLayersAsset = asset.layers.filter(function (layer) {
+                return layer.nm === layerName && layer.ks && layer.ks.s && (layer.isAdjustment === undefined);
+            });
+
+            textLayersAsset.forEach(function (textLayerAsset) {
+                textLayerAsset.ks.s.k[0] = parseFloat(textareaValue) || 100;
+                textLayerAsset.ks.s.k[1] = parseFloat(textareaValue) || 100;
+            });
+
+            var textLayersAsset = asset.layers.filter(function (layer) {
+                return layer.nm === layerName+"_template" && layer.ks && layer.ks.s && (layer.isAdjustment === undefined);
+            });
+
+            textLayersAsset.forEach(function (textLayerAsset) {
+                textLayerAsset.ks.s.k[0] = parseFloat(textareaValue) || 100;
+                textLayerAsset.ks.s.k[1] = parseFloat(textareaValue) || 100;
+            });
+        }
+    });
+}
+
+        
+    }
+}
+
+
+
+
+
     function updateSize() {
-        if (animationInstance && animData && animData.layers) {
-            var textLayer = animData.layers.find(function (layer) {
-                return layer.nm === "text1" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
-            });
 
-            if (textLayer) {
-                textLayer.t.d.k[0].s.s = parseFloat(fontSizeInput1.value) || 100;
-            }
-        }
+        updateAllSize("text1", fontSizeInput1.value);
+        updateAllSize("text2", fontSizeInput2.value);
 
-        if (animationInstance && animData && animData.layers) {
-            var textLayer = animData.layers.find(function (layer) {
-                return layer.nm === "text1_template" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
-            });
 
-            if (textLayer) {
-                textLayer.t.d.k[0].s.s = parseFloat(fontSizeInput1.value) || 100;
-            }
-        }
+        if (animationInstance && animData) {
 
-        if (animationInstance && animData && animData.layers) {
-            var textLayer2 = animData.layers.find(function (layer) {
-                return layer.nm === "text2" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
-            });
 
-            if (textLayer2) {
-                textLayer2.t.d.k[0].s.s =  parseFloat(fontSizeInput2.value) || 100;
-            }
-        }
-
-        if (animationInstance && animData && animData.layers) {
-            var textLayer = animData.layers.find(function (layer) {
-                return layer.nm === "text2_template" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
-            });
-
-            if (textLayer) {
-                textLayer.t.d.k[0].s.s = parseFloat(fontSizeInput2.value) || 100;
-            }
-        }
-
-        if (animationInstance && animData && animData.layers) {
-            var textLayer = animData.layers.find(function (layer) {
-                return layer.nm === "text1" && layer.t && layer.t.d.k[0] && layer.t.d.k[0].s;
-            });
-
-            if (textLayer) {
                 currentFrame = animationInstance.currentFrame;
                 lottie.destroy();
                 playLottieAnimation(animData);
                 animationInstance.goToAndStop(currentFrame, true);
-            }
+                spanElement.textContent = 'play_arrow';
+            
         }
     }
 
-    function Align(AlignValue) {
-        if (animData && animData.layers) {
+    function updateAllAlign(layerName, AlignValue) {
+    if (animationInstance && animData) {
+        // Vérifiez si les couches sont directement dans animData.layers
+        if (animData.layers) {
+            
             animData.layers.forEach(function (layer) {
-                if (layer.nm === "text1" && layer.ef) {
+                if (layer.nm === layerName && layer.ef) {
                     layer.ef.forEach(function (effect) {
                         if (effect.nm === "T_Alignment" && effect.ef) {
                             effect.ef.forEach(function (AlignEffect) {
@@ -780,26 +1247,8 @@ function updateText() {
                     });
                 }
             });
-        }
 
-        if (animData && animData.layers) {
-            animData.layers.forEach(function (layer) {
-                if (layer.nm === "text2" && layer.ef) {
-                    layer.ef.forEach(function (effect) {
-                        if (effect.nm === "T_Alignment" && effect.ef) {
-                            effect.ef.forEach(function (AlignEffect) {
-                                if (AlignEffect.nm === "Slider" && AlignEffect.v) {
-                                    AlignEffect.v.k = AlignValue;
-                                }
-                            });
-                        }
-                    });
-                }
-            });
-        }
-
-        if (animationInstance && animData && animData.layers) {
-    for (var i = 0; i < animData.layers.length; i++) {
+            for (var i = 0; i < animData.layers.length; i++) {
         var currentLayer = animData.layers[i];
 
         // Vérifiez si le layer a la propriété "t" avec "d" et "k"
@@ -808,15 +1257,74 @@ function updateText() {
             currentLayer.t.d.k[0].s.j = AlignValue;
         }
     }
+        }
+
+    if (animData.assets && animData.assets.length > 0) {
+    animData.assets.forEach(function (asset) {
+        if (asset.layers) 
+        {
+            var textLayersAsset = asset.layers.filter(function (layer) {
+                return layer.nm === layerName && layer.ks && layer.ks.s && (layer.isAdjustment === undefined);
+            });
+
+            textLayersAsset.forEach(function (layer) {
+                
+    
+
+        // Vérifiez si le layer a la propriété "t" avec "d" et "k"
+        if (layer.t && layer.t.d && layer.t.d.k && layer.t.d.k[0] && layer.t.d.k[0].s) {
+            // Mettez à jour la valeur de "j"
+            layer.t.d.k[0].s.j = AlignValue;
+        }
+    
+
+                if (layer.nm === layerName && layer.ef) {
+                    layer.ef.forEach(function (effect) {
+                        if (effect.nm === "T_Alignment" && effect.ef) {
+                            effect.ef.forEach(function (AlignEffect) {
+                                if (AlignEffect.nm === "Slider" && AlignEffect.v) {
+                                    AlignEffect.v.k = AlignValue;
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+
+      
+        }
+    });
+}
+
+        
+    }
+}
+
+    function Align(AlignValue) {
+        updateAllAlign("text1", AlignValue);
+        updateAllAlign("text2", AlignValue);
+
+
+    //     if (animationInstance && animData) {
+            
+    //             for (var i = 0; i < animData.layers.length; i++) {
+    //     var currentLayer = animData.layers[i];
+
+    //     // Vérifiez si le layer a la propriété "t" avec "d" et "k"
+    //     if (currentLayer.t && currentLayer.t.d && currentLayer.t.d.k && currentLayer.t.d.k[0] && currentLayer.t.d.k[0].s) {
+    //         // Mettez à jour la valeur de "j"
+    //         currentLayer.t.d.k[0].s.j = AlignValue;
+    //     }
+    // } }
 
     // Mettez à jour l'animation une fois que toutes les modifications sont faites
     currentFrame = animationInstance.currentFrame;
     lottie.destroy();
     playLottieAnimation(animData);
     animationInstance.goToAndStop(currentFrame, true);
+    spanElement.textContent = 'play_arrow';
 }
 
-}
 
     function Format(FormatValue) {
         if (animData) {
@@ -832,13 +1340,87 @@ function updateText() {
                 animData.w = 1080 ;
                 animData.h = 1920;
             }
+
+            if (animData.layers) {
+            
+            animData.layers.forEach(function (layer) {
+                if (layer.nm.startsWith("Pre-comp") && layer.w && layer.h) {
+                    if(FormatValue == 0){
+                        layer.w = 1920 ;
+                        layer.h = 1080;
+            }
+            if(FormatValue == 1){
+                layer.w = 1080 ;
+                layer.h = 1080;
+            }
+            if(FormatValue == 2){
+                layer.w = 1080 ;
+                layer.h = 1920;
+            }
+                }
+            });
+        }
+
                 currentFrame = animationInstance.currentFrame;
                 lottie.destroy();
                 playLottieAnimation(animData);
                 animationInstance.goToAndStop(currentFrame, true);
+                spanElement.textContent = 'play_arrow';
         }
     }
 
+    document.querySelectorAll(".color-opacity-checkbox").forEach(function (checkbox, index) {
+    checkbox.addEventListener("change", function () {
+        var opacityValue = this.checked ? 100 : 0;
+        // You can use opacityValue as needed for your logic
+        // For example, update the corresponding color_opacity effect in the animation data
+        if (animData && animData.layers) {
+            animData.layers.forEach(function (layer) {
+                if (layer.nm === "palette" && layer.ef) {
+                    layer.ef.forEach(function (effect) {
+                        if (effect.nm === "color_opacity" + (index + 1) && effect.ef) {
+                            effect.ef.forEach(function (opacityEffect) {
+                                if (opacityEffect.nm === "Slider" && opacityEffect.v) {
+                                    opacityEffect.v.k = opacityValue;
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        if (animData.assets && animData.assets.length > 0) {
+    animData.assets.forEach(function (asset) {
+        if (asset.layers) 
+        {
+            var LayersAsset = asset.layers.filter(function (layer) {
+                return layer.nm === "palette" && layer.ks && layer.ks.s && (layer.isAdjustment === undefined);
+            });
+
+            LayersAsset.forEach(function (layer) {
+                if (layer.nm === "palette" && layer.ef) {
+                    layer.ef.forEach(function (effect) {
+                        if (effect.nm === "color_opacity" + (index + 1) && effect.ef) {
+                            effect.ef.forEach(function (opacityEffect) {
+                                if (opacityEffect.nm === "Slider" && opacityEffect.v) {
+                                    opacityEffect.v.k = opacityValue;
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+
+      
+        }
+    });
+}
+        // Update the colors and play the animation
+        updateColors();
+        playLottieAnimation(animData);
+    });
+});
 
 function playLottieAnimation(animationData) {
     var animationContainer = document.getElementById('animation-container');
@@ -888,6 +1470,7 @@ function playLottieAnimation(animationData) {
 
     // Go to the saved frame
     animationInstance.goToAndStop(currentFrame, true);
+    spanElement.textContent = 'play_arrow';
 }
 
 
@@ -945,6 +1528,19 @@ document.querySelectorAll(".color-picker").forEach(function (colorPicker, index)
     });
 });
 
+document.querySelectorAll(".color-picker-text").forEach(function (colorPicker, index) {
+    colorPicker.addEventListener("input", function () {
+        selectedColors[index] = colorPicker.value;
+        UpdateColorText(index, 0);
+        var textPalette = document.getElementById("TextPalette" + (index+1));
+        textPalette.addEventListener("click", function(){
+            UpdateColorText(index, 1);
+            colorPicker.value = "#000000";
+            selectedColors[index - 1] = "#000000"; // Default to black
+         });
+    });
+});
+
 // Setup color pickers on load
 applyColorsFromJSON();
 
@@ -964,31 +1560,7 @@ document.getElementById("scale").addEventListener("input", function () {
  
 });
 
-document.querySelectorAll(".color-opacity-checkbox").forEach(function (checkbox, index) {
-    checkbox.addEventListener("change", function () {
-        var opacityValue = this.checked ? 100 : 0;
-        // You can use opacityValue as needed for your logic
-        // For example, update the corresponding color_opacity effect in the animation data
-        if (animData && animData.layers) {
-            animData.layers.forEach(function (layer) {
-                if (layer.nm === "palette" && layer.ef) {
-                    layer.ef.forEach(function (effect) {
-                        if (effect.nm === "color_opacity" + (index + 1) && effect.ef) {
-                            effect.ef.forEach(function (opacityEffect) {
-                                if (opacityEffect.nm === "Slider" && opacityEffect.v) {
-                                    opacityEffect.v.k = opacityValue;
-                                }
-                            });
-                        }
-                    });
-                }
-            });
-        }
-        // Update the colors and play the animation
-        updateColors();
-        playLottieAnimation(animData);
-    });
-});
+
 
     // Event listener for text input change
     textArea1 .addEventListener("input", function () {
