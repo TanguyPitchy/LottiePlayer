@@ -1268,16 +1268,11 @@ function updateAllSize(layerName, textareaValue) {
             });
 
             textLayersAsset.forEach(function (layer) {
-                
-    
-
         // Vérifiez si le layer a la propriété "t" avec "d" et "k"
         if (layer.t && layer.t.d && layer.t.d.k && layer.t.d.k[0] && layer.t.d.k[0].s) {
             // Mettez à jour la valeur de "j"
             layer.t.d.k[0].s.j = AlignValue;
         }
-    
-
                 if (layer.nm === layerName && layer.ef) {
                     layer.ef.forEach(function (effect) {
                         if (effect.nm === "T_Alignment" && effect.ef) {
@@ -1287,10 +1282,22 @@ function updateAllSize(layerName, textareaValue) {
                                 }
                             });
                         }
+                        
                     });
                 }
             });
 
+            var textLayersAsset = asset.layers.filter(function (layer) {
+                return layer.nm === layerName+"_template" && layer.ks && layer.ks.s && (layer.isAdjustment === undefined);
+            });
+
+            textLayersAsset.forEach(function (layer) {
+        // Vérifiez si le layer a la propriété "t" avec "d" et "k"
+        if (layer.t && layer.t.d && layer.t.d.k && layer.t.d.k[0] && layer.t.d.k[0].s) {
+            // Mettez à jour la valeur de "j"
+            layer.t.d.k[0].s.j = AlignValue;
+        }
+            });
       
         }
     });
