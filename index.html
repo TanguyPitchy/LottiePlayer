@@ -189,6 +189,9 @@ inputFields.forEach(function (field) {
         handleArrowKeyInput(event, field);
     });
 
+    // Event listeners for Panel_X, Panel_Y, and Scale
+    inputElement.addEventListener("input", updatePanel);
+
 });
 
 function handleArrowKeyInput(event, inputId) {
@@ -201,6 +204,8 @@ function handleArrowKeyInput(event, inputId) {
         updateInputValue(inputId, step * direction);
     }
 }
+
+
 
 
 
@@ -868,6 +873,7 @@ function applyTextFromJSON() {
     
 
 function updatePanel(){
+    console.log("maj")
             // Update Panel_X, Panel_Y, and Scale
             if (animData.layers) {
             animData.layers.forEach(function (layer) {
@@ -1038,14 +1044,14 @@ function UpdateColorText(Picker, Palette){
                         effect.a.fc.k = [hexToRgb(colorPicker.value).r / 255, hexToRgb(colorPicker.value).g / 255, hexToRgb(colorPicker.value).b / 255, 1];
                         }
                         if (effect.nm === "Color_Palette" && effect.s.e.k) {
-                            effect.s.e.k = 99;
+                            effect.s.e.k = 99.999;
                         }
                     }else{
                         if (effect.nm === "Color_Text" && effect.a.fc.k) {
                         effect.a.fc.k = [hexToRgb(colorPicker.value).r / 255, hexToRgb(colorPicker.value).g / 255, hexToRgb(colorPicker.value).b / 255, 1];
                         }
                         if (effect.nm === "Color_Palette" && effect.s.e.k) {
-                            effect.s.e.k = 1;
+                            effect.s.e.k = 0.01;
                         }
                     }
                 });
@@ -1550,24 +1556,6 @@ document.querySelectorAll(".color-picker-text").forEach(function (colorPicker, i
 
 // Setup color pickers on load
 applyColorsFromJSON();
-
-// Event listeners for Panel_X, Panel_Y, and Scale
-document.getElementById("panelX").addEventListener("input", function () {
-    updatePanel();
-  
-});
-
-document.getElementById("panelY").addEventListener("input", function () {
-    updatePanel();
- 
-});
-
-document.getElementById("scale").addEventListener("input", function () {
-    updatePanel();
- 
-});
-
-
 
     // Event listener for text input change
     textArea1 .addEventListener("input", function () {
