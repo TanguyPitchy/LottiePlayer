@@ -126,7 +126,13 @@
             
                 <input type="text" placeholder="Scale"  id="scale" value="" />
             </div>
+            <div id="spacing">Spacing</div>
+            <div class="ControlSpacing">
+                <input type="text" placeholder="Text Spacing" id="linespacing" value="" />   
+            </div>
+
         </div>
+        
         
         <div class="ControlText">
             Textes
@@ -174,7 +180,7 @@ ColorPlayer.addEventListener('input', function() {
     document.body.style.backgroundColor = newColor;
 });
 
-var inputFields = ["panelX", "panelY", "scale", "font-size-input-1", "font-size-input-2"];
+var inputFields = ["panelX", "panelY", "scale",  "linespacing", "font-size-input-1", "font-size-input-2"];
 
 inputFields.forEach(function (field) {
     var inputElement = document.getElementById(field);
@@ -214,7 +220,7 @@ function updateInputValue(inputId, step) {
     var currentValue = parseFloat(inputElement.value) || 0;
     var newValue = currentValue + step;
     inputElement.value = newValue;
-    if(inputId == "panelX" || inputId == "panelY" || inputId == "scale"){
+    if(inputId == "panelX" || inputId == "panelY" || inputId == "scale" || inputId == "linespacing"){
         updatePanel();
     }else{
         updateSize();
@@ -307,6 +313,8 @@ function handleDrop(event) {
             DesacOpacity();
         };
         reader.readAsText(files[0]);
+        document.getElementById("linespacing").style.display = "none";
+        document.getElementById("spacing").style.display = "none";
     }
 }
 
@@ -377,7 +385,7 @@ function DesacColor() {
                     colorPicker.disabled = true;
 
                     layer.ef.forEach(function (effect) {
-                        if (effect.nm === "color" + i) {
+                        if (((effect.nm === "color" + i) || (effect.nm === "color" + i + "_text"))) {
                             colorPicker.disabled = false;
                             return; // Sortir de la boucle interne si un effet correspondant est trouvé
                         }
@@ -401,7 +409,7 @@ function DesacColor() {
                     colorPicker.disabled = true;
 
                     layer.ef.forEach(function (effect) {
-                        if (effect.nm === "color" + i) {
+                        if (((effect.nm === "color" + i) || (effect.nm === "color" + i + "_text"))) {
                             colorPicker.disabled = false;
                             return; // Sortir de la boucle interne si un effet correspondant est trouvé
                         }
@@ -479,7 +487,7 @@ function applyColorsFromJSON() {
                 layer.ef.forEach(function (effect) {
                     for (var i = 1; i <= 5; i++) {
                         var colorPicker = document.getElementById("color-picker" + i);
-                        if (effect.nm === "color" + i && effect.ef && colorPicker) {
+                        if (((effect.nm === "color" + i) || (effect.nm === "color" + i + "_text")) && effect.ef && colorPicker) {
                             effect.ef.forEach(function (subEffect) {
                                 if (subEffect.nm === "Color" && subEffect.v) {
                                     var colorValue = rgbToHex(
@@ -513,7 +521,7 @@ function applyColorsFromJSON() {
                 layer.ef.forEach(function (effect) {
                     for (var i = 1; i <= 5; i++) {
                         var colorPicker = document.getElementById("color-picker" + i);
-                        if (effect.nm === "color" + i && effect.ef && colorPicker) {
+                        if (((effect.nm === "color" + i) || (effect.nm === "color" + i + "_text")) && effect.ef && colorPicker) {
                             effect.ef.forEach(function (subEffect) {
                                 if (subEffect.nm === "Color" && subEffect.v) {
                                     var colorValue = rgbToHex(
@@ -556,8 +564,19 @@ function applyColorsFromJSON() {
                                 }
                             });
                         }
+
+                        if (effect.nm === "Linespacing" && effect.ef) {
+                            effect.ef.forEach(function (linespacingEffect) {
+                                if (linespacingEffect.nm === "Slider" && linespacingEffect.v) {
+                                    document.getElementById("linespacing").value = linespacingEffect.v.k || 0;
+                                    document.getElementById("linespacing").style.display = "block";
+                                    document.getElementById("spacing").style.display = "block";
+                                }
+                            });
+                        }
                     });
                 }
+
 
                 // For "scale" layer
                 if (layer.nm === "scale" && layer.ks && layer.ks.s) {
@@ -589,6 +608,16 @@ function applyColorsFromJSON() {
                             effect.ef.forEach(function (panelYEffect) {
                                 if (panelYEffect.nm === "Slider" && panelYEffect.v) {
                                     document.getElementById("panelY").value = panelYEffect.v.k || 0;
+                                }
+                            });
+                        }
+
+                        if (effect.nm === "Linespacing" && effect.ef) {
+                            effect.ef.forEach(function (linespacingEffect) {
+                                if (linespacingEffect.nm === "Slider" && linespacingEffect.v) {
+                                    document.getElementById("linespacing").value = linespacingEffect.v.k || 0;
+                                    document.getElementById("linespacing").style.display = "block";
+                                    document.getElementById("spacing").style.display = "block";
                                 }
                             });
                         }
@@ -895,6 +924,14 @@ function updatePanel(){
                                 }
                             });
                         }
+
+                        if (effect.nm === "Linespacing" && effect.ef) {
+                            effect.ef.forEach(function (linespacingEffect) {
+                                if (linespacingEffect.nm === "Slider" && linespacingEffect.v) {
+                                    linespacingEffect.v.k = parseFloat(document.getElementById("linespacing").value) || 0;
+                                }
+                            });
+                        }
                     });
                 }
 
@@ -930,6 +967,14 @@ function updatePanel(){
                             effect.ef.forEach(function (panelYEffect) {
                                 if (panelYEffect.nm === "Slider" && panelYEffect.v) {
                                     panelYEffect.v.k = parseFloat(document.getElementById("panelY").value) || 0;
+                                }
+                            });
+                        }
+
+                        if (effect.nm === "Linespacing" && effect.ef) {
+                            effect.ef.forEach(function (linespacingEffect) {
+                                if (linespacingEffect.nm === "Slider" && linespacingEffect.v) {
+                                    linespacingEffect.v.k = parseFloat(document.getElementById("linespacing").value) || 0;
                                 }
                             });
                         }
@@ -972,7 +1017,7 @@ function updateColors() {
                 layer.ef.forEach(function (effect) {
                     for (var i = 1; i <= 5; i++) {
                         var colorPicker = document.getElementById("color-picker" + i);
-                        if (effect.nm === "color" + i && effect.ef && colorPicker) {
+                        if (((effect.nm === "color" + i) || (effect.nm === "color" + i + "_text")) && effect.ef && colorPicker) {
                             effect.ef.forEach(function (subEffect) {
                                 if (subEffect.nm === "Color" && subEffect.v) {
                                     subEffect.v.k = [hexToRgb(colorPicker.value).r / 255, hexToRgb(colorPicker.value).g / 255, hexToRgb(colorPicker.value).b / 255, 1];
@@ -998,7 +1043,7 @@ function updateColors() {
                 layer.ef.forEach(function (effect) {
                     for (var i = 1; i <= 5; i++) {
                         var colorPicker = document.getElementById("color-picker" + i);
-                        if (effect.nm === "color" + i && effect.ef && colorPicker) {
+                        if (((effect.nm === "color" + i) || (effect.nm === "color" + i + "_text")) && effect.ef && colorPicker) {
                             effect.ef.forEach(function (subEffect) {
                                 if (subEffect.nm === "Color" && subEffect.v) {
                                     subEffect.v.k = [hexToRgb(colorPicker.value).r / 255, hexToRgb(colorPicker.value).g / 255, hexToRgb(colorPicker.value).b / 255, 1];
@@ -1478,6 +1523,7 @@ function playLottieAnimation(animationData) {
 
     document.getElementById('animation-slider').addEventListener('input', function () {
         updateFrame();
+        spanElement.textContent = 'play_arrow'; 
     });
     
 
