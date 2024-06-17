@@ -325,6 +325,10 @@ function handleDrop(event) {
         document.getElementById("marge_h").style.display = "none";
         document.getElementById("linespacing").style.display = "none";
         document.getElementById("spacing").style.display = "none";
+        for (var i = 1; i <= 5; i++) {
+            var colorPicker = document.getElementById("color-picker" + i);
+            colorPicker.style.border = '';
+        }
     }
 }
 
@@ -498,8 +502,9 @@ function applyColorsFromJSON() {
                     for (var i = 1; i <= 5; i++) {
                         var colorPicker = document.getElementById("color-picker" + i);
                         if (((effect.nm === "color" + i) || (effect.nm === "color" + i + "_text")) && effect.ef && colorPicker) {
-                            if (effect.nm === "color" + i + "_text") {
+                            if (effect.nm == "color" + i + "_text") {
                                 colorPicker.style.border = '1px dashed black';
+                                console.log("yes2");
                             }
                             effect.ef.forEach(function (subEffect) {
                                 if (subEffect.nm === "Color" && subEffect.v) {
