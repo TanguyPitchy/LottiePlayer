@@ -126,6 +126,13 @@
             
                 <input type="text" placeholder="Scale"  id="scale" value="" />
             </div>
+
+            <div id="marge">Marges</div>
+            <div class="ControlMarge">
+                <input type="text" placeholder="Marge W" id="marge_w" value="" />   
+                <input type="text" placeholder="Marge H" id="marge_h" value="" />  
+            </div>
+
             <div id="spacing">Spacing</div>
             <div class="ControlSpacing">
                 <input type="text" placeholder="Text Spacing" id="linespacing" value="" />   
@@ -180,7 +187,7 @@ ColorPlayer.addEventListener('input', function() {
     document.body.style.backgroundColor = newColor;
 });
 
-var inputFields = ["panelX", "panelY", "scale",  "linespacing", "font-size-input-1", "font-size-input-2"];
+var inputFields = ["panelX", "panelY", "scale", "marge_w", "marge_h", "linespacing", "font-size-input-1", "font-size-input-2"];
 
 inputFields.forEach(function (field) {
     var inputElement = document.getElementById(field);
@@ -220,7 +227,7 @@ function updateInputValue(inputId, step) {
     var currentValue = parseFloat(inputElement.value) || 0;
     var newValue = currentValue + step;
     inputElement.value = newValue;
-    if(inputId == "panelX" || inputId == "panelY" || inputId == "scale" || inputId == "linespacing"){
+    if(inputId == "panelX" || inputId == "panelY" || inputId == "scale" || inputId == "marge_w" || inputId == "marge_h" || inputId == "linespacing"){
         updatePanel();
     }else{
         updateSize();
@@ -313,6 +320,9 @@ function handleDrop(event) {
             DesacOpacity();
         };
         reader.readAsText(files[0]);
+        document.getElementById("marge").style.display = "none";
+        document.getElementById("marge_w").style.display = "none";
+        document.getElementById("marge_h").style.display = "none";
         document.getElementById("linespacing").style.display = "none";
         document.getElementById("spacing").style.display = "none";
     }
@@ -488,6 +498,9 @@ function applyColorsFromJSON() {
                     for (var i = 1; i <= 5; i++) {
                         var colorPicker = document.getElementById("color-picker" + i);
                         if (((effect.nm === "color" + i) || (effect.nm === "color" + i + "_text")) && effect.ef && colorPicker) {
+                            if (effect.nm === "color" + i + "_text") {
+                                colorPicker.style.border = '1px dashed black';
+                            }
                             effect.ef.forEach(function (subEffect) {
                                 if (subEffect.nm === "Color" && subEffect.v) {
                                     var colorValue = rgbToHex(
@@ -574,6 +587,26 @@ function applyColorsFromJSON() {
                                 }
                             });
                         }
+
+                        if (effect.nm === "B_Marge_W" && effect.ef) {
+                            effect.ef.forEach(function (MargeWEffect) {
+                                if (MargeWEffect.nm === "Slider" && MargeWEffect.v) {
+                                    document.getElementById("marge_w").value = MargeWEffect.v.k || 0;
+                                    document.getElementById("marge_w").style.display = "block";
+                                    document.getElementById("marge").style.display = "block";
+                                }
+                            });
+                        }
+
+                        if (effect.nm === "B_Marge_H" && effect.ef) {
+                            effect.ef.forEach(function (MargeHEffect) {
+                                if (MargeHEffect.nm === "Slider" && MargeHEffect.v) {
+                                    document.getElementById("marge_h").value = MargeHEffect.v.k || 0;
+                                    document.getElementById("marge_h").style.display = "block";
+                                    document.getElementById("marge").style.display = "block";
+                                }
+                            });
+                        }
                     });
                 }
 
@@ -618,6 +651,26 @@ function applyColorsFromJSON() {
                                     document.getElementById("linespacing").value = linespacingEffect.v.k || 0;
                                     document.getElementById("linespacing").style.display = "block";
                                     document.getElementById("spacing").style.display = "block";
+                                }
+                            });
+                        }
+
+                        if (effect.nm === "B_Marge_W" && effect.ef) {
+                            effect.ef.forEach(function (MargeWEffect) {
+                                if (MargeWEffect.nm === "Slider" && MargeWEffect.v) {
+                                    document.getElementById("marge_w").value = MargeWEffect.v.k || 0;
+                                    document.getElementById("marge_w").style.display = "block";
+                                    document.getElementById("marge").style.display = "block";
+                                }
+                            });
+                        }
+
+                        if (effect.nm === "B_Marge_H" && effect.ef) {
+                            effect.ef.forEach(function (MargeHEffect) {
+                                if (MargeHEffect.nm === "Slider" && MargeHEffect.v) {
+                                    document.getElementById("marge_h").value = MargeHEffect.v.k || 0;
+                                    document.getElementById("marge_h").style.display = "block";
+                                    document.getElementById("marge").style.display = "block";
                                 }
                             });
                         }
@@ -932,6 +985,22 @@ function updatePanel(){
                                 }
                             });
                         }
+
+                        if (effect.nm === "B_Marge_W" && effect.ef) {
+                            effect.ef.forEach(function (MargeWEffect) {
+                                if (MargeWEffect.nm === "Slider" && MargeWEffect.v) {
+                                    MargeWEffect.v.k = parseFloat(document.getElementById("marge_w").value) || 0;
+                                }
+                            });
+                        }
+
+                        if (effect.nm === "B_Marge_H" && effect.ef) {
+                            effect.ef.forEach(function (MargeHEffect) {
+                                if (MargeHEffect.nm === "Slider" && MargeHEffect.v) {
+                                    MargeHEffect.v.k = parseFloat(document.getElementById("marge_h").value) || 0;
+                                }
+                            });
+                        }
                     });
                 }
 
@@ -975,6 +1044,22 @@ function updatePanel(){
                             effect.ef.forEach(function (linespacingEffect) {
                                 if (linespacingEffect.nm === "Slider" && linespacingEffect.v) {
                                     linespacingEffect.v.k = parseFloat(document.getElementById("linespacing").value) || 0;
+                                }
+                            });
+                        }
+
+                        if (effect.nm === "B_Marge_W" && effect.ef) {
+                            effect.ef.forEach(function (MargeWEffect) {
+                                if (MargeWEffect.nm === "Slider" && MargeWEffect.v) {
+                                    MargeWEffect.v.k = parseFloat(document.getElementById("marge_w").value) || 0;
+                                }
+                            });
+                        }
+
+                        if (effect.nm === "B_Marge_H" && effect.ef) {
+                            effect.ef.forEach(function (MargeHEffect) {
+                                if (MargeHEffect.nm === "Slider" && MargeHEffect.v) {
+                                    MargeHEffect.v.k = parseFloat(document.getElementById("marge_h").value) || 0;
                                 }
                             });
                         }
