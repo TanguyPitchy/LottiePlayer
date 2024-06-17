@@ -103,7 +103,6 @@ header {
   gap: 10px;
 }
 
-
 .SelectOpacity{
   display: flex;
   flex-direction: row !important;
@@ -217,13 +216,33 @@ border: solid 1px rgba(255, 255, 255, 0.459);
   width: 40px;
 }
 
+.ControlPos{
+  display: flex;
+  gap:5px;
+}
+
 .ControlPos input{
   width: 75px;
   text-align: center;
 }
 
+.ControlSpacing{
+  display: flex;
+  gap:5px;
+}
+
 .ControlSpacing input{
   width: 85px;
+  text-align: center;
+}
+
+.ControlMarge{
+  display: flex;
+  gap:5px;
+}
+
+.ControlMarge input{
+  width: 75px;
   text-align: center;
 }
 
@@ -348,3 +367,4 @@ min-width: 235.028px;
   border-radius: 10%;
   border: 1px solid #000000;
 }
+
