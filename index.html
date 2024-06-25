@@ -1175,15 +1175,21 @@ function UpdateColorText(Picker, Palette){
                 if (layer.nm === "text"+(Picker+1) && layer.t.a) {
                 layer.t.a.forEach(function (effect) {
                     if(Palette == 1){
-                        if (effect.nm === "Color_Text" && effect.a.fc.k) {
+                        if (effect.nm === "Color_Text" && effect.a.fc && effect.a.fc.k) {
                         effect.a.fc.k = [hexToRgb(colorPicker.value).r / 255, hexToRgb(colorPicker.value).g / 255, hexToRgb(colorPicker.value).b / 255, 1];
+                        }
+                        if (effect.nm === "Color_Text" && effect.a.sc && effect.a.sc.k) {
+                        effect.a.sc.k = [hexToRgb(colorPicker.value).r / 255, hexToRgb(colorPicker.value).g / 255, hexToRgb(colorPicker.value).b / 255, 1];
                         }
                         if (effect.nm === "Color_Palette" && effect.s.e.k) {
                             effect.s.e.k = 99.999;
                         }
                     }else{
-                        if (effect.nm === "Color_Text" && effect.a.fc.k) {
+                        if (effect.nm === "Color_Text" && effect.a.fc && effect.a.fc.k) {
                         effect.a.fc.k = [hexToRgb(colorPicker.value).r / 255, hexToRgb(colorPicker.value).g / 255, hexToRgb(colorPicker.value).b / 255, 1];
+                        }
+                        if (effect.nm === "Color_Text" && effect.a.sc && effect.a.sc.k) {
+                        effect.a.sc.k = [hexToRgb(colorPicker.value).r / 255, hexToRgb(colorPicker.value).g / 255, hexToRgb(colorPicker.value).b / 255, 1];
                         }
                         if (effect.nm === "Color_Palette" && effect.s.e.k) {
                             effect.s.e.k = 0.01;
@@ -1206,18 +1212,24 @@ function UpdateColorText(Picker, Palette){
             LayersAsset.forEach(function (layer) {
                 layer.t.a.forEach(function (effect) {
                     if(Palette == 1){
-                        if (effect.nm === "Color_Text" && effect.a.fc.k) {
+                        if (effect.nm === "Color_Text" && effect.a.fc && effect.a.fc.k) {
                         effect.a.fc.k = [hexToRgb(colorPicker.value).r / 255, hexToRgb(colorPicker.value).g / 255, hexToRgb(colorPicker.value).b / 255, 1];
                         }
+                        if (effect.nm === "Color_Text" && effect.a.sc && effect.a.sc.k) {
+                        effect.a.sc.k = [hexToRgb(colorPicker.value).r / 255, hexToRgb(colorPicker.value).g / 255, hexToRgb(colorPicker.value).b / 255, 1];
+                        }
                         if (effect.nm === "Color_Palette" && effect.s.e.k) {
-                            effect.s.e.k = 99;
+                            effect.s.e.k = 99.999;
                         }
                     }else{
-                        if (effect.nm === "Color_Text" && effect.a.fc.k) {
+                        if (effect.nm === "Color_Text" && effect.a.fc && effect.a.fc.k) {
                         effect.a.fc.k = [hexToRgb(colorPicker.value).r / 255, hexToRgb(colorPicker.value).g / 255, hexToRgb(colorPicker.value).b / 255, 1];
                         }
+                        if (effect.nm === "Color_Text" && effect.a.sc && effect.a.sc.k) {
+                        effect.a.sc.k = [hexToRgb(colorPicker.value).r / 255, hexToRgb(colorPicker.value).g / 255, hexToRgb(colorPicker.value).b / 255, 1];
+                        }
                         if (effect.nm === "Color_Palette" && effect.s.e.k) {
-                            effect.s.e.k = 1;
+                            effect.s.e.k = 0.01;
                         }
                     }
                 });
