@@ -31,9 +31,12 @@
                 <button onclick="FormatVer()"><span class="material-symbols-outlined">
                     crop_9_16
                     </span></button>
-                <div>
+                <div class="res-select">
                     <button onclick="ToggleGrid()"><span class="material-symbols-outlined">
                         grid_3x3
+                        </span></button>
+                    <button onclick="ToggleHandle()"><span class="material-symbols-outlined">
+                        select
                         </span></button>
                 </div>
 
@@ -729,6 +732,8 @@ function DetectColorText() {
     }
 }
 
+let Alignement;
+
 function DetectAlign() {
     className = "ButtonOn";
 var alignLeftButton = document.querySelector('.Alignment button:nth-child(1)');
@@ -747,12 +752,15 @@ document.querySelectorAll('.Alignment button').forEach(function(btn) {
                                 if (AlignEffect.nm === "Slider" && AlignEffect.v) {
                                     if(AlignEffect.v.k == 0){
                                         alignLeftButton.classList.add(className);
+                                        Alignement = 0;
                                     }
-                                    if(AlignEffect.v.k == 1){
+                                    if(AlignEffect.v.k == 1)
                                         alignRightButton.classList.add(className);
-                                    }
+                                        Alignement = 1;
+                                    
                                     if(AlignEffect.v.k == 2){
                                         alignCenterButton.classList.add(className);
+                                        Alignement = 2;
                                     }
                                 }
                             });
@@ -798,6 +806,64 @@ document.querySelectorAll('.Alignment button').forEach(function(btn) {
 }
 }
 
+// Variable globale pour stocker la référence de la dernière bounding box ajoutée
+let previousBoundingBox = null;
+let deltaX = 0;
+let deltaY= 0;
+
+function ToggleHandle() {
+    const svg = document.querySelector("#animation-container svg");
+    const playerDiv = document.querySelector(".player");
+    const animationContainerDiv = document.getElementById("animation-container");
+
+    if (svg && playerDiv && animationContainerDiv) {
+        // Sélection du deuxième enfant direct de la balise <svg>
+        const secondChild = svg.children[1];
+
+        if (secondChild) {
+            // Obtenir la bounding box du deuxième enfant direct de <svg>
+            const bbox = secondChild.getBoundingClientRect();
+
+                if(Alignement == 0){
+                    deltaX = bbox.width/-2;
+                    deltaY= 0;
+                    console.log("0")
+                }
+                if(Alignement == 1){
+                    deltaX = bbox.width/2;
+                    deltaY= 0;
+                    console.log("1")
+                }
+                if(Alignement == 2){
+                    deltaX = 0;
+                    deltaY= 0;
+                    console.log("2")
+                }
+
+            // Mettre à jour les positions précédentes avec les nouvelles
+
+            // Créer la bounding box div
+            const boundingBoxDiv = document.createElement("div");
+            boundingBoxDiv.classList.add("bounding-box");
+            boundingBoxDiv.style.width = `${bbox.width}px`;
+            boundingBoxDiv.style.height = `${bbox.height}px`;
+
+            // Appliquer la transformation seulement si la différence de position n'est pas nulle
+                boundingBoxDiv.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+
+            // Supprimer l'ancienne bounding box si elle existe et est attachée
+            if (previousBoundingBox && previousBoundingBox.parentNode === animationContainerDiv) {
+                animationContainerDiv.removeChild(previousBoundingBox);
+            }
+
+            // Ajouter la nouvelle bounding box au container #animation-container
+            animationContainerDiv.appendChild(boundingBoxDiv);
+
+            // Mettre à jour la référence de la dernière bounding box ajoutée
+            previousBoundingBox = boundingBoxDiv;
+        }
+    }
+}
 
 function DetectFormat() {
     className = "ButtonOn";
@@ -1218,8 +1284,7 @@ if (animationInstance && animData && animData.layers) {
                                         item.g.k.k[4] = 0.5;
                                         j=0;
                                         for (var i = 5; i < 8; i++) {
-                                            var t = (i - 4) / 4;
-                                            item.g.k.k[i] = colorValues1[j] * (1 - t) + colorValues2[j] * t;
+                                            item.g.k.k[i] = (colorValues1[j] + colorValues2[j])/2;
                                             j+=1;
                                         }
                                         item.g.k.k[8] = 1;
@@ -1788,6 +1853,7 @@ function playLottieAnimation(animationData) {
     });
 
     animationInstance.addEventListener('pause', function () {
+        ToggleHandle();
         isPaused = true;
     });
 
